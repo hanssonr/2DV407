@@ -28,12 +28,4 @@ require.config({
     }
 });
 
-//init the application
-require(['jquery', 'backbone', 'router'], function($, Backbone, Router) {
-
-    $(function() {
-        var main = $('#main');
-        var router = new Router({el: main}); //inject the main element
-        Backbone.history.start();
-    });
-});
+require(['app'], function(App) { App.initialize(); });
