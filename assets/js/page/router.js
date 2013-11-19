@@ -14,9 +14,9 @@ define(['backbone', 'helloview'], function(Backbone, HelloView) {
             "": "index"
         },
 
+        //Show the index view
         index: function() {
             var view = new HelloView();
-            //this.el.empty();
             this.el.append(view.render().el);
         }
     });
