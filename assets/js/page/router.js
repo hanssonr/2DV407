@@ -1,7 +1,7 @@
 /**
  * Created by rkh on 2013-11-18.
  */
-define(['backbone', 'helloview'], function(Backbone, HelloView) {
+define(['backbone', 'editorview'], function(Backbone, EditorView) {
 
     var Router = Backbone.Router.extend({
 
@@ -16,8 +16,8 @@ define(['backbone', 'helloview'], function(Backbone, HelloView) {
 
         //Show the index view
         index: function() {
-            var view = new HelloView();
-            this.el.append(view.render().el);
+            var view = new ToolbarView();
+            this.el.append(view.render());
         }
     });
 

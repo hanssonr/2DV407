@@ -5,8 +5,13 @@ define(['backbone', 'handlebars'], function(Backbone, Handlebars) {
 
     var HelloView = Backbone.View.extend({
 
+        tiles: [1,2,3,4,5,6],
         phrase: "Hello World!",
-        template: Handlebars.compile($("#helloworld-template").html()),
+        template: Handlebars.compile($("#tile-template").html()),
+
+        initialize: function(tile) {
+            this.phrase = tile.get('position');
+        },
 
         events: {
             'click': "welcome"

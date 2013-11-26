@@ -4,15 +4,45 @@
         <meta charset="utf-8">
         <title>t:jls</title>
         <link href="assets/css/bootstrap.css" rel="stylesheet">
+        <link href="assets/css/tjls.css" rel="stylesheet">
+        <link href="assets/css/jquery.jscrollpane.css" rel="stylesheet">
     </head>
 
     <body>
-        <div id="main"></div>
+        <div id="container">
 
-    <!-- Handlebars templates -->
-    <script id="helloworld-template" type="text/x-handlebars-template">
-        <Button class="click btn btn-success btn-large">{{phrase}}</Button>
-    </script>
-    <script data-main="assets/js/main" src="assets/js/lib/require.js"></script>
+            <div id="main"></div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <!-- Handlebars templates -->
+        <script type="text/x-handlebars-template" id="toolbar-template">
+            <div id="tools"></div>
+        </script>
+        
+        <script type="text/x-handlebars-template" id="map-template">
+            <div id="map" style='width:{{mapwidth}}px; height:{{mapheight}}px;'></div>
+            <div class="selector"></div>
+        </script>
+
+        <script type="text/x-handlebars-template" id="tileset-template">
+            <div id="tileset" style='background-image: url("{{ url }}");'></div>
+            <div class="selector"></div>
+        </script>
+
+        <script type="text/x-handlebars-template" id="map-tile-template">
+            <div class="maptile"></div>
+        </script>
+
+        <script data-main="assets/js/main" src="assets/js/lib/require.js"></script>
     </body>
 </html>

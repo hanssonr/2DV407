@@ -12,7 +12,11 @@ require.config({
         handlebars: 'lib/handlebars-v1.1.2',
         underscore: 'lib/underscore',
         router: 'page/router',
-        helloview: 'page/view/helloview'
+        toolbarview: 'page/view/toolbarview',
+        mapview: 'page/view/mapview',
+        mapmodel: 'page/model/map',
+        tilesetview: 'page/view/tilesetview',
+        jscrollpane: 'lib/jquery.jscrollpane'
     },
 
     //config non-amd scripts
@@ -24,8 +28,11 @@ require.config({
         },
         handlebars: {
             exports: 'Handlebars'
+        },
+        jscrollpane: {
+            deps: ['jquery', 'lib/jquery.mousewheel']
         }
     }
 });
 
-require(['app'], function(App) { App.initialize(); });
+require(['editor'], function(Editor) { Editor.initialize(); });

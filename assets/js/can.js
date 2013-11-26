@@ -32,8 +32,9 @@ function Canvas(con) {
     }
 };
 
-function Tile(img) {
-
+function Tile(x, y) {
+    this.x = x;
+    this.y = y;
 };
 
 function Rectangle(x, y, w, h) {
@@ -46,22 +47,103 @@ function Rectangle(x, y, w, h) {
 };
 
 $(document).ready(function() {
-    var craw = $("#mycanvas");
+/*    var craw = $("#mycanvas");
     var cdata = $("#mycanvas")[0];
     var canvas = new Canvas(cdata.getContext('2d'));
-    var maincdata = $('#maincanvas');
+    var maincdata = $('#maincanvas');*/
 
     var mc = document.createElement("canvas");
     var ctx = mc.getContext('2d');
     var img = new Image();
-    img.src = "assets/img/test.png";
+    var bg = "assets/img/test.png";
+    img.src = bg;
+
     var tiles = [];
     var tilesize = 32;
     var tilesX = 0;
     var tilesY = 0;
+    var mapsizeX = 15, mapsizeY = 15;
     var currentTile = null;
 
-    img.onload = function() {
+    var tsw, tsh;
+
+    $('#map').css('width', mapsizeX * tilesize).css('height', mapsizeY * tilesize);
+
+    $('#tileselector').css('width', tilesize-2).css('height', tilesize-2);
+    $('#mapselector').css('width', tilesize-2).css('height', tilesize-2);
+
+    $(img).load(function() {
+        tsw = img.width;
+        tsh = img.height;
+        tilesX = tsw / tilesize;
+        tilesY = tsh / tilesize;
+
+        for (var y=0; y <mapsizeY; y++) {
+            tiles[y] = new Array(mapsizeX);
+        }
+
+        $("#tileset").css('width', tsw).css('height', tsh).css('background-image', 'url('+bg+')');
+        $('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
+    });
+
+    var mx, my;
+
+    $('#tileset').mousemove(function(e) {
+        var offsetX = isNaN(parseInt($(this).parent().css('left'))) ? 0 : parseInt($(this).parent().css('left'));
+        var offsetY = isNaN(parseInt($(this).parent().css('top'))) ? 0 : parseInt($(this).parent().css('top'));
+        mx = Math.floor((e.pageX - offsetX) / tilesize) * tilesize;
+        my = Math.floor((e.pageY - offsetY) / tilesize) * tilesize;
+       $('#tileselector').css('top', my).css('left', mx);
+    });
+
+    $('#tileselector').click(function(e) {
+        currentTile = new Tile(mx, my);
+    });
+
+    $('#map').mousemove(function(e) {
+        var mpx = Math.floor((e.pageX - $(this).offset().left) / tilesize) * tilesize;
+        var mpy = Math.floor((e.pageY - $(this).offset().top) / tilesize) * tilesize;
+
+        $('#mapselector').css('top', mpy).css('left', mpx);
+    });
+
+
+    var trigger, mousedown = false;
+    $('#mapselector').mousedown(function(e) {
+        var that = this;
+        mousedown = true;
+        trigger = setInterval(function() {draw(that);}, 50);
+
+    })
+
+    $(document).mouseup(function() {
+        mousedown = false;
+        clearInterval(trigger);
+    });
+
+    var draw = function(element) {
+        if (!mousedown) return;
+        if (currentTile === null) return;
+        var x = $(element).position().left
+        var y = $(element).position().top
+
+        if (x / tilesize > mapsizeX -1  || y / tilesize > mapsizeY -1) { return; }
+
+        var tile = tiles[x / tilesize][y / tilesize];
+        if (typeof tile === 'undefined') {
+            var div = document.createElement("div");
+            $(div).css('position', 'absolute').css('top', y).css('left', x).css('width', tilesize).css('height', tilesize);
+            $(div).css('background-image', 'url('+bg+')').css('background-position', -currentTile.x + 'px ' + -currentTile.y + 'px');
+            tiles[x / tilesize][y / tilesize] = div;
+            $('#map').append(div);
+        } else {
+            $(tile).css('background-position', -currentTile.x + 'px ' + -currentTile.y + 'px');
+        }
+    }
+
+
+
+/*    img.onload = function() {
         console.log(cdata.height);
         cdata.height = img.height;
 
@@ -105,45 +187,45 @@ $(document).ready(function() {
             }
         });
 
-    }
+    }*/
 
-    var mx, my, mousedown = false;
-    var trigger;
+/*    var mx, my, mousedown = false;
+    var trigger;*/
 
-    $(maincdata).mousemove(function(e) {
+/*    $(maincdata).mousemove(function(e) {
         mx = Math.floor((e.pageX - parseInt($(this).parent().css('left'))) / tilesize);
         my = Math.floor((e.pageY - parseInt($(this).parent().css('top'))) / tilesize);
         $("#mapselector").css("top", my * tilesize).css("left", mx * tilesize);
-    });
+    });*/
 
-    $("#mapselector").mousedown(function(e) {
+/*    $("#mapselector").mousedown(function(e) {
         mousedown = true;
         trigger = setInterval(function() {draw();}, 50);
     }).mouseup(function() {
         mousedown = false;
         clearInterval(trigger);
-    });
+    });*/
 
-    var draw = function() {
+/*    var draw = function() {
         if (!mousedown) return;
         if (currentTile !== null) {
             maincdata[0].getContext('2d').putImageData(tiles[currentTile], mx * tilesize, my * tilesize);
         }
-    }
+    }*/
 
 
 
-    $("#tileselector").click(function(e) {
+/*    $("#tileselector").click(function(e) {
         var offset = parseInt($('.bar').css('top'));
         var x = Math.floor((e.pageX - craw[0].parentNode.offsetLeft) / tilesize);
         var y = Math.floor((((e.pageY + offset) - craw[0].parentNode.offsetTop)) / tilesize);
         currentTile = y * tilesX + x;
-    });
+    });*/
 
-    $(cdata).mousemove(function(e) {
+/*    $(cdata).mousemove(function(e) {
         var offset = parseInt($('.bar').css('top'));
         var x = Math.floor((e.pageX - craw[0].parentNode.offsetLeft) / tilesize);
         var y = Math.floor(e.pageY / tilesize);
         $("#tileselector").css("top", (y * tilesize) - (offset % tilesize)).css("left", x * tilesize);
-    });
+    });*/
 });
