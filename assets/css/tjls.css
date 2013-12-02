@@ -40,6 +40,8 @@ html, body {  height: 100%; width: 100%; }
 }
 
 #map {
+    position: relative;
+    overflow:hidden;
     margin: 50px auto 0 auto;
     border: 1px solid #000000;
     background-color: #f8f8f8;
@@ -54,20 +56,13 @@ html, body {  height: 100%; width: 100%; }
 }
 
 #tileset-wrapper {
+    position:relative;
     overflow: hidden;
     width: 320px;
     height: 320px;
     background-color: #f8f8f8;
     margin: auto;
     border: 10px solid #202220;
-}
-
-.maptile {
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .selector {
@@ -77,5 +72,5 @@ html, body {  height: 100%; width: 100%; }
     border: 1px solid #000;
     position: absolute;
     top: 0;
-    left 0;
+    left: 0;
 }

@@ -19,11 +19,11 @@ define(['backbone', 'handlebars'],
             this.el = this.$el;
             this.url = opts.url;
             this.tilesize = opts.tilesize;
-
+            this.editor = opts.editor;
         },
 
         events: {
-            'mousemove': 'hoverTileset',
+            'mousemove #tileset': 'hoverTileset',
             'click .selector': 'setActiveTile'
         },
 
@@ -37,6 +37,7 @@ define(['backbone', 'handlebars'],
             var x = -tx * this.tilesize;
             var y = -ty * this.tilesize;
             $('#tools').css('background-image', 'url('+this.url+')').css('background-position', x + 'px ' + y + 'px');
+            this.editor.currentTile = [x, y];
         },
 
         //moves the selector to the current tile hoovered

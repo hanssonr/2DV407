@@ -8,11 +8,12 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'jscrollpane
     var Editor = {
 
         //hardcoded values, TODO: should read input from user
-        url: "http://img20.imageshack.us/img20/64/dustvg.png",
-        tilesize: 32,
-        mapWidth: 20,
-        mapHeight: 20,
+        url: "http://brain.wireos.com/wp-content/uploads/gta2tiles.jpg",
+        tilesize: 64,
+        mapWidth: 15,
+        mapHeight: 15,
         map: null,
+        currentTile: null,
 
         initialize: function() {
             this.container = $('#container');
@@ -25,11 +26,12 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'jscrollpane
             $(img).load(function() {
                 that.map = new Map({mapsizeX: that.mapWidth, mapsizeY: that.mapHeight, tilesize: that.tilesize});
 
-                that.toolview = new ToolbarView({url: that.url, tilesize: that.tilesize});
-                that.mapview = new MapView(that.map);
+                that.toolview = new ToolbarView({url: that.url, tilesize: that.tilesize, editor: that});
+                that.mapview = new MapView(that);
                 that.render();
 
-                $('#tileset').css('width', img.width).css('height', img.height);
+                $('#tileset').css({width: img.width, height: img.height});
+                $('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
                 $('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
             });
         },
