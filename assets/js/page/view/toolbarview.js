@@ -14,6 +14,7 @@ define(['backbone', 'handlebars', 'tilesetview'],
         },
 
         render: function() {
+            this.$el.empty();
             this.$el.html(this.template(this));
 
             //append sub-view

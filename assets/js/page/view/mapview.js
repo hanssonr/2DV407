@@ -30,7 +30,7 @@ define(['backbone', 'handlebars'],
             'mousemove #map': 'hoverMap',
             'mousedown #map': 'mousedown',
             'mouseup': 'mouseup',
-            'contextmenu #map': 'contextmenu'
+            'contextmenu #map': 'contextmenu',
         },
 
         //Remove contextmenu
@@ -121,6 +121,7 @@ define(['backbone', 'handlebars'],
         },
 
         render: function() {
+            this.$el.empty();
             this.$el.html(this.template(this));
             return this;
         }

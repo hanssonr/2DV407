@@ -16,7 +16,9 @@ require.config({
         mapview: 'page/view/mapview',
         mapmodel: 'page/model/map',
         tilesetview: 'page/view/tilesetview',
-        jscrollpane: 'lib/jquery.jscrollpane'
+        jscrollpane: 'lib/jquery.jscrollpane',
+        navigationview: 'page/view/navigationview',
+        createmapview: 'page/view/createmapview'
     },
 
     //config non-amd scripts

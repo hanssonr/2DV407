@@ -8,21 +8,21 @@ define(['backbone'],
             tiles: [],
 
             initialize: function(opts) {
-                this.mapsizeX = opts.mapsizeX;
-                this.mapsizeY = opts.mapsizeY;
+                this.mapwidth = opts.mapwidth;
+                this.mapheight = opts.mapheight;
                 this.tilesize = opts.tilesize;
 
-                for (var y=0; y < this.mapsizeY; y++) {
-                    this.tiles[y] = new Array(this.mapsizeX);
+                for (var y=0; y < this.mapheight; y++) {
+                    this.tiles[y] = new Array(this.mapwidth);
                 }
             },
 
             getCalculatedWidth: function() {
-                return this.mapsizeX * this.tilesize;
+                return this.mapwidth * this.tilesize;
             },
 
             getCalculatedHeight: function() {
-                return this.mapsizeY * this.tilesize;
+                return this.mapheight * this.tilesize;
             }
 
 

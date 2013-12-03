@@ -19,7 +19,7 @@ define(['backbone', 'handlebars'],
             this.el = this.$el;
             this.url = opts.url;
             this.tilesize = opts.tilesize;
-            this.editor = opts.editor;
+            this.editor = opts;
         },
 
         events: {
@@ -36,7 +36,10 @@ define(['backbone', 'handlebars'],
         setActiveTile: function(e) {
             var x = -tx * this.tilesize;
             var y = -ty * this.tilesize;
-            $('#tools').css('background-image', 'url('+this.url+')').css('background-position', x + 'px ' + y + 'px');
+            $('#tools').css({
+                backgroundImage: 'url('+this.url+')',
+                backgroundPosition: x + 'px ' + y + 'px',
+            });
             this.editor.currentTile = [x, y];
         },
 

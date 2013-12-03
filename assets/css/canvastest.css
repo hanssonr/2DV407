@@ -40,7 +40,7 @@ div, canvas {
 #maincanvas {
     position:relative;
     border:1px solid #000000;
-    background-image: url('../img/mainbg.png');
+    background-image: url('../img/mapbg/32x32.png');
 }
 
 #tileselector {

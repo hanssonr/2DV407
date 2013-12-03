@@ -55,7 +55,7 @@ $(document).ready(function() {
     var mc = document.createElement("canvas");
     var ctx = mc.getContext('2d');
     var img = new Image();
-    var bg = "assets/img/test.png";
+    var bg = "assets/img/dirt.png";
     img.src = bg;
 
     var tiles = [];
