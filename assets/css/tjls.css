@@ -1,4 +1,3 @@
-
 html, body {  height: 100%; width: 100%; }
 
 #container {
@@ -10,34 +9,44 @@ html, body {  height: 100%; width: 100%; }
     float:left;
     width: 100%;
     height: 30px;
-    padding: 10px;
+    padding: 10px 0px 10px 0px;
     background-color: #212121;
     border-bottom: 1px solid #464646;
 }
 
+#navigation button {
+    margin-left: 10px;
+}
+
 #toolbar {
-    min-width: 350px;
-    max-width: 350px;
-    width: 20%;
-    height: 100%;
-    float:left;
     background-color: #333533;
     border-right: 1px solid #464646;
+    width: 350px;
+
+    /* Position */
+    position: absolute;
+    left: 0px;
+    top: 51px; /* Navigation (height + padding * 2 + border) */
+    bottom: 0px;
 }
 
 #tools {
-    width: 64px;
-    height: 64px;
     background-color: #006dcc;
-    margin: 5px;
     border: 10px solid #202220;
+    margin: 5px;
+    height: 64px;
+    width: 64px;
 }
 
 #map-wrapper {
-    width: 80%;
-    height: 100%;
     background-color: #393b39;
-    float:left;
+
+    /* Position */
+    position: absolute;
+    left: 351px; /* Toolbar (width + border) */
+    top: 51px; /* Navigation (height + padding * 2 + border) */
+    bottom: 0px;
+    right: 0px;
 }
 
 #map {

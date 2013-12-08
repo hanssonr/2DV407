@@ -10,8 +10,8 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         //defaults
         url: "http://brain.wireos.com/wp-content/uploads/gta2tiles.jpg",
         tilesize: 64,
-        mapwidth: 8,
-        mapheight: 8,
+        mapwidth: 25,
+        mapheight: 25,
         map: null,
         currentTile: null,
         mapbg: null,
