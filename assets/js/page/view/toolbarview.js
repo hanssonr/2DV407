@@ -1,12 +1,12 @@
 /**
  * Created by rkh on 2013-11-25.
  */
-define(['backbone', 'handlebars', 'tilesetview'],
-    function(Backbone, Handlebars, TilesetView) {
+define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTemplate.html'],
+    function(Backbone, Handlebars, TilesetView, toolbarTemplate) {
 
     var ToolbarView = Backbone.View.extend({
         id: 'toolbar',
-        template: Handlebars.compile($("#toolbar-template").html()),
+        template: Handlebars.compile( toolbarTemplate ),
 
         //get url and tilesize from the editor
         initialize: function(opts) {

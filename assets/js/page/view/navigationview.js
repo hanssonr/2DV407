@@ -1,13 +1,13 @@
 /**
  * Created by rkh on 2013-12-03.
  */
-define(['backbone', 'handlebars', 'editor', 'createmapview'],
-    function(Backbone, Handlebars, Editor, CreateMapView) {
+define(['backbone', 'handlebars', 'editor', 'createmapview', 'text!../templates/navigationTemplate.html'],
+    function(Backbone, Handlebars, Editor, CreateMapView, navigationTemplate) {
 
         var NavigationView = Backbone.View.extend({
 
             id: 'navigation',
-            template: Handlebars.compile($("#navigation-template").html()),
+            template: Handlebars.compile( navigationTemplate ),
 
             initialize: function() {
             },

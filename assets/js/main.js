@@ -5,6 +5,7 @@
 require.config({
     baseUrl: 'assets/js/',
     paths: {
+        text: 'lib/text',
         jquery: 'lib/jquery/jquery-2.0.3',
         jquerymousewheel: 'lib/jquery/jquery.mousewheel',
         purebackbone: 'lib/backbone/purebackbone',
