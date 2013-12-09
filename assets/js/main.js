@@ -6,6 +6,7 @@ require.config({
     baseUrl: 'assets/js/',
     paths: {
         jquery: 'lib/jquery/jquery-2.0.3',
+        jquerymousewheel: 'lib/jquery/jquery.mousewheel',
         purebackbone: 'lib/backbone/purebackbone',
         backbone_LS: 'lib/backbone/backbone.localStorage',
         backbone: 'lib/backbone/backbone',
@@ -32,10 +33,16 @@ require.config({
         handlebars: {
             exports: 'Handlebars'
         },
+        jquerymousewheel: {
+            deps: ["jquery"]
+        },
         jscrollpane: {
-            deps: ['jquery', 'lib/jquery/jquery.mousewheel']
+            deps: ["jquery"]
         }
     }
 });
 
-require(['editor'], function(Editor) { Editor.initialize(); });
+require(['editor', 'jquery'], function(Editor, $) {
+    var editorView = new Editor();
+    $("body").append(editorView.el);
+});

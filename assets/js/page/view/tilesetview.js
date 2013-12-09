@@ -19,7 +19,6 @@ define(['backbone', 'handlebars'],
             this.el = this.$el;
             this.url = opts.url;
             this.tilesize = opts.tilesize;
-            this.editor = opts;
         },
 
         events: {
@@ -28,7 +27,7 @@ define(['backbone', 'handlebars'],
         },
 
         render: function() {
-            this.$el.html(this.template(this));
+            this.$el.append(this.template(this));
             return this;
         },
 
@@ -38,9 +37,10 @@ define(['backbone', 'handlebars'],
             var y = -ty * this.tilesize;
             $('#tools').css({
                 backgroundImage: 'url('+this.url+')',
-                backgroundPosition: x + 'px ' + y + 'px',
+                backgroundPosition: x + 'px ' + y + 'px'
             });
-            this.editor.currentTile = [x, y];
+
+            Backbone.trigger("currentTile", [x, y]);
         },
 
         //moves the selector to the current tile hoovered

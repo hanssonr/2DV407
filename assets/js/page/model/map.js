@@ -11,6 +11,7 @@ define(['backbone'],
                 this.mapwidth = opts.mapwidth;
                 this.mapheight = opts.mapheight;
                 this.tilesize = opts.tilesize;
+                this.url = opts.url;
 
                 for (var y=0; y < this.mapheight; y++) {
                     this.tiles[y] = new Array(this.mapwidth);

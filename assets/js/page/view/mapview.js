@@ -7,7 +7,6 @@ define(['backbone', 'handlebars'],
 
     var MapView = Backbone.View.extend({
         id: 'map-wrapper',
-
         template: Handlebars.compile($("#map-template").html()),
 
         mapwidth: 0,
@@ -19,19 +18,24 @@ define(['backbone', 'handlebars'],
         mdown: false,
         trigger: null,
         rotation: 0,
+        currentTile: null,
 
         initialize: function(opts) {
-            this.map = opts.map;
-            this.mapwidth = opts.map.getCalculatedWidth();
-            this.mapheight = opts.map.getCalculatedHeight();
-            this.editor = opts;
+            this.listenTo(Backbone, "currentTile", this.currentTileChange);
+            this.map = opts;
+            this.mapwidth = this.map.getCalculatedWidth();
+            this.mapheight = this.map.getCalculatedHeight();
+        },
+
+        currentTileChange: function(e) {
+            this.currentTile = e;
         },
 
         events: {
             'mousemove #map': 'hoverMap',
             'mousedown #map': 'mousedown',
             'mouseup': 'mouseup',
-            'contextmenu #map': 'contextmenu',
+            'contextmenu #map': 'contextmenu'
         },
 
         //Remove contextmenu
@@ -50,7 +54,7 @@ define(['backbone', 'handlebars'],
         //Draws a tile to #Map and puts it into the array in the map-object
         setTile: function() {
             if(!this.mdown) return;
-            if(this.editor.currentTile == null) return;
+            if(this.currentTile == null) return;
             if(my > this.map.mapsizeY-1 || mx > this.map.mapsizeX-1) return;
 
             var tile = this.map.tiles[my][mx];
@@ -63,15 +67,15 @@ define(['backbone', 'handlebars'],
                     left: mx * this.map.tilesize,
                     width: this.map.tilesize,
                     height: this.map.tilesize,
-                    backgroundImage: 'url('+this.editor.url+')',
-                    backgroundPosition: this.editor.currentTile[0] + 'px ' + this.editor.currentTile[1] + 'px',
+                    backgroundImage: 'url('+this.map.url+')',
+                    backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     transform:'rotate('+ this.rotation +'deg)'
                 });
                 $("#map div:last").before(div);
                 this.map.tiles[my][mx] = div;
             } else {
                 $(tile).css({
-                    backgroundPosition: this.editor.currentTile[0] + 'px ' + this.editor.currentTile[1] + 'px',
+                    backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     transform:'rotate('+ this.rotation +'deg)'
                 });
             }
@@ -99,7 +103,7 @@ define(['backbone', 'handlebars'],
 
                 if (typeof(tile) != 'undefined') {
                     var mapPos = $(tile).css('background-position').split(' ');
-                    this.editor.currentTile = [parseInt(mapPos[0]), parseInt(mapPos[1])];
+                    this.currentTile = [parseInt(mapPos[0]), parseInt(mapPos[1])];
                 }
             }
         },
@@ -109,12 +113,12 @@ define(['backbone', 'handlebars'],
             this.calculatePosition(e);
             $('#map-wrapper .selector').css('top', my * this.map.tilesize).css('left', mx * this.map.tilesize);
 
-            if(this.editor.currentTile === null) {
+            if(this.currentTile === null) {
                 $('#map-wrapper .selector').css({backgroundImage: 'url('+ +')'});
             } else {
                 $('#map-wrapper .selector').css({
-                    backgroundImage: 'url('+this.editor.url+')',
-                    backgroundPosition: this.editor.currentTile[0] + 'px ' + this.editor.currentTile[1] + 'px',
+                    backgroundImage: 'url('+this.map.url+')',
+                    backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     opacity: 0.5,
                     transform:'rotate('+ this.rotation +'deg)'
                 });

@@ -9,9 +9,7 @@ define(['backbone', 'handlebars', 'editor', 'createmapview'],
             id: 'navigation',
             template: Handlebars.compile($("#navigation-template").html()),
 
-            initialize: function(opts) {
-                this.el = this.$el;
-                this.editor = opts;
+            initialize: function() {
             },
 
             events: {
@@ -34,7 +32,6 @@ define(['backbone', 'handlebars', 'editor', 'createmapview'],
             },
 
             render: function() {
-                this.$el.empty();
                 this.$el.html(this.template(this));
                 return this;
             }

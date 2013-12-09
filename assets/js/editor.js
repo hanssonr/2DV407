@@ -3,25 +3,28 @@
  */
 //init the application
 
-define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel'],
-    function($, Backbone, ToolbarView, MapView, NavigationView, Map) {
+define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
+    function($, Backbone, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
 
-    var Editor = {
+    var Editor = Backbone.View.extend({
+
+        id: "container",
 
         //defaults
         url: "http://brain.wireos.com/wp-content/uploads/gta2tiles.jpg",
         tilesize: 64,
-        mapwidth: 25,
-        mapheight: 25,
+        mapwidth: 10,
+        mapheight: 10,
         map: null,
-        currentTile: null,
         mapbg: null,
 
         initialize: function(opts) {
+            this.listenTo(Backbone, "newMapEvent", this.createNewSetup);
+            this.createNewSetup();
+        },
 
-            this.container = $('#container');
-            this.main = $('#main');
-
+        //Backbone event-callback for creating a new map
+        createNewSetup: function(opts) {
             if (typeof(opts) != 'undefined') {
                 this.url = opts.url;
                 this.tilesize = opts.tilesize;
@@ -36,19 +39,24 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
             var that = this;
 
             $(img).load(function() {
-                that.map = new Map({mapwidth: that.mapwidth, mapheight: that.mapheight, tilesize: that.tilesize});
+                that.map = new Map({
+                    mapwidth: that.mapwidth,
+                    mapheight: that.mapheight,
+                    tilesize: that.tilesize,
+                    url: that.url
+                });
 
-                that.toolview = new ToolbarView(that);
-                that.mapview = new MapView(that);
-                that.navigationview = new NavigationView(that);
+                that.toolview = new ToolbarView(that.map);
+                that.mapview = new MapView(that.map);
+                that.navigationview = new NavigationView();
                 that.render();
 
-                $('#tileset').css({width: img.width, height: img.height});
-                $('#tools').css({width: that.tilesize, height: that.tilesize});
-                $('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                //$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
-                $('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
-                //$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
+                that.$('#tileset').css({width: img.width, height: img.height});
+                that.$('#tools').css({width: that.tilesize, height: that.tilesize});
+                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
+                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
+                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+                that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
             });
         },
 
@@ -65,12 +73,13 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         },
 
         render: function() {
-            this.container.empty();
-            this.container.append(this.navigationview.render().el);
-            this.container.append(this.toolview.render().el);
-            this.container.append(this.mapview.render().el);
+            this.$el.empty();
+
+            this.$el.append(this.navigationview.render().el);
+            this.$el.append(this.toolview.render().el);
+            this.$el.append(this.mapview.render().el);
         }
-    }
+    });
 
     return Editor;
 });

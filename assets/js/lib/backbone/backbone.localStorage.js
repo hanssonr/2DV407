@@ -9,7 +9,7 @@
         module.exports = factory(require("underscore"), require("backbone"));
     } else if (typeof define === "function" && define.amd) {
         // AMD. Register as an anonymous module.
-        define(["../underscore","purebackbone"], function(_, Backbone) {
+        define(["underscore","backbone"], function(_, Backbone) {
             // Use global variables if the locals are undefined.
             return factory(_ || root._, Backbone || root.Backbone);
         });
@@ -219,6 +219,4 @@
     };
 
     return Backbone.LocalStorage;
-}));/**
- * Created by rkh on 2013-11-18.
- */
+}));
