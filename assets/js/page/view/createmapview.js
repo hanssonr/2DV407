@@ -1,13 +1,13 @@
 /**
  * Created by rkh on 2013-12-03.
  */
-define(['backbone', 'handlebars'],
-    function(Backbone, Handlebars) {
+define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
+    function(Backbone, Handlebars, createMapTemplate) {
 
         var CreateMapView = Backbone.View.extend({
 
             className: "overlay-wrapper",
-            template: Handlebars.compile($("#createmap-template").html()),
+            template: Handlebars.compile( createMapTemplate ),
 
             events: {
                 'click #newmap-submit' : 'validateMapCredentials',

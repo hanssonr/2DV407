@@ -2,12 +2,12 @@
  * Created by rkh on 2013-11-25.
  */
 
-define(['backbone', 'handlebars'],
-    function(Backbone, Handlebars) {
+define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
+    function(Backbone, Handlebars, mapTemplate) {
 
     var MapView = Backbone.View.extend({
         id: 'map-wrapper',
-        template: Handlebars.compile($("#map-template").html()),
+        template: Handlebars.compile( mapTemplate ),
 
         mapwidth: 0,
         mapheight: 0,

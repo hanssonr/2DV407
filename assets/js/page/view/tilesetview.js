@@ -1,12 +1,12 @@
 /**
  * Created by rkh on 2013-11-26.
  */
-define(['backbone', 'handlebars'],
-    function(Backbone, Handlebars) {
+define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
+    function(Backbone, Handlebars, tilesetTemplate) {
 
     var TilesetView = Backbone.View.extend({
         id: 'tileset-wrapper',
-        template: Handlebars.compile($("#tileset-template").html()),
+        template: Handlebars.compile( tilesetTemplate ),
 
         //tile X, tile Y
         tx: 0,
