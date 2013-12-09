@@ -2,8 +2,9 @@
  * Created by rkh on 2013-11-19.
  */
 //init the application
-define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
-    function($, Backbone, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
+
+define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel'],
+    function($, Backbone, ToolbarView, MapView, NavigationView, Map) {
 
     var Editor = {
 
@@ -17,6 +18,7 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         mapbg: null,
 
         initialize: function(opts) {
+
             this.container = $('#container');
             this.main = $('#main');
 
@@ -44,8 +46,9 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                 $('#tileset').css({width: img.width, height: img.height});
                 $('#tools').css({width: that.tilesize, height: that.tilesize});
                 $('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                $('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
+                //$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
                 $('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+                //$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
             });
         },
 

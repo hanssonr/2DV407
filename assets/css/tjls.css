@@ -47,6 +47,7 @@ html, body {  height: 100%; width: 100%; }
     top: 51px; /* Navigation (height + padding * 2 + border) */
     bottom: 0px;
     right: 0px;
+    width: auto;
 }
 
 #map {

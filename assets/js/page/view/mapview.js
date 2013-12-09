@@ -1,6 +1,7 @@
 /**
  * Created by rkh on 2013-11-25.
  */
+
 define(['backbone', 'handlebars'],
     function(Backbone, Handlebars) {
 
