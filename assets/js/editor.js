@@ -38,7 +38,6 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                 }*/
             }
 
-            console.log(Backbone);
             this.createMap();
             this.calculateMapBg();
 
