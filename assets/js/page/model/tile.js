@@ -6,18 +6,43 @@
 define(['backbone'], function(Backbone) {
     var Tile = Backbone.Model.extend({
 
-        //instantiate default values if none was
-        defaults: {
-            position: [0,0],
-            typeId: -1
+        initialize: function() {
         },
 
-        setPosition: function(newpos) {
+        setTilePosition: function(newpos) {
             this.set({position: newpos});
         },
 
-        setTypeId: function(id) {
-            this.set({typeId: id});
+        setBackgroundPosition: function(newpos) {
+            this.set({bgPosition: newpos});
+        },
+
+        setRotation: function(deg) {
+            this.set({rotation: deg});
+        },
+
+        getTileX: function() {
+            return this.get("position")[0];
+        },
+
+        getTileY: function() {
+            return this.get("position")[1];
+        },
+
+        getBgX: function() {
+            return this.get("bgPosition")[0];
+        },
+
+        getBgY: function() {
+            return this.get("bgPosition")[1];
+        },
+
+        getElement: function() {
+            return this.get("element");
+        },
+
+        getRotation: function() {
+            return this.get("rotation");
         }
     });
 

@@ -13,14 +13,14 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         //defaults
         url: "http://brain.wireos.com/wp-content/uploads/gta2tiles.jpg",
         tilesize: 64,
-        mapwidth: 10,
-        mapheight: 10,
+        mapwidth: 8,
+        mapheight: 8,
         map: null,
         mapbg: null,
-        currentTool: 1,
 
         initialize: function(opts) {
             this.listenTo(Backbone, "newMapEvent", this.createNewSetup);
+            this.listenTo(Backbone, "openMapEvent", this.createNewSetup);
             this.createNewSetup();
         },
 
@@ -31,8 +31,15 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                 this.tilesize = opts.tilesize;
                 this.mapwidth = opts.mapwidth;
                 this.mapheight = opts.mapheight;
+
+/*                if (typeof(opts.tiles) != 'undefined') {
+                    this.map = this.createMap();
+                    this.map.addTileArray(opts.tiles);
+                }*/
             }
 
+            console.log(Backbone);
+            this.createMap();
             this.calculateMapBg();
 
             var img = new Image();
@@ -40,13 +47,6 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
             var that = this;
 
             $(img).load(function() {
-                that.map = new Map({
-                    mapwidth: that.mapwidth,
-                    mapheight: that.mapheight,
-                    tilesize: that.tilesize,
-                    url: that.url
-                });
-
                 that.toolview = new ToolbarView(that.map);
                 that.mapview = new MapView(that.map);
                 that.navigationview = new NavigationView();
@@ -70,6 +70,15 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                if (parseInt(bg) === that.tilesize) {
                    that.mapbg = bg;
                }
+            });
+        },
+
+        createMap: function() {
+            this.map = new Map({
+                mapwidth: this.mapwidth,
+                mapheight: this.mapheight,
+                tilesize: this.tilesize,
+                url: this.url
             });
         },
 

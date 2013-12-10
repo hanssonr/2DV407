@@ -60,7 +60,6 @@ define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
             cancelCreation: function(e) {
                 e.preventDefault();
                 this.$el.remove();
-
             },
 
             render: function() {

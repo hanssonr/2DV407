@@ -1,0 +1,13 @@
+{
+    "url": "http://fc06.deviantart.net/fs71/f/2010/091/4/2/RPG_Maker_VX_RTP_Tileset_by_telles0808.png",
+    "mapwidth": 3,
+    "mapheight": 3,
+    "tilesize": 32,
+    "tiles": [
+        [
+            {"position":[0,0], "bgPosition":[-128, 0], "rotation": 0}, {"position":[1,0], "bgPosition":[0,0], "rotation": 90}, {}
+        ],
+        [],
+        []
+    ]
+}

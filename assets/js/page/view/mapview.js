@@ -2,8 +2,8 @@
  * Created by rkh on 2013-11-25.
  */
 
-define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
-    function(Backbone, Handlebars, mapTemplate) {
+define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.html'],
+    function(Backbone, Handlebars, Tile, mapTemplate) {
 
     var MapView = Backbone.View.extend({
         id: 'map-wrapper',
@@ -52,6 +52,12 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
             offsety = $('#map').offset().top;
             mx = Math.floor((e.pageX - offsetx) / this.map.tilesize);
             my = Math.floor((e.pageY - offsety) / this.map.tilesize);
+
+            //fix for getting pos < 0 || pos > mapwidth/mapheight
+            if (mx > this.map.mapwidth-1) { mx = this.map.mapwidth-1; }
+            else if (mx < 0) { mx = 0; }
+            if (my > this.map.mapheight-1) { my = this.map.mapheight-1; }
+            else if (my < 0) { my = 0; }
         },
 
         /*
@@ -67,7 +73,6 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
             if(this.currentTool !== 1) return;
             if(!this.mdown) return;
             if(this.currentTile == null) return;
-            if(my > this.map.mapsizeY-1 || mx > this.map.mapsizeX-1) return;
 
             var tile = this.map.tiles[my][mx];
 
@@ -83,12 +88,22 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
                     backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     transform:'rotate('+ this.rotation +'deg)'
                 });
-                $("#map div:last").before(div);
-                this.map.tiles[my][mx] = div;
+
+                tile = new Tile({
+                    position: [mx, my],
+                    bgPosition: [this.currentTile[0], this.currentTile[1]],
+                    element: div,
+                    rotation: this.rotation
+                });
+
+                this.map.tiles[my][mx] = tile;
+                this.drawTile(tile);
             } else {
-                $(tile).css({
-                    backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
-                    transform:'rotate('+ this.rotation +'deg)'
+                tile.setBackgroundPosition([this.currentTile[0], this.currentTile[1]]);
+                tile.setRotation(this.rotation);
+                this.$(tile.getElement()).css({
+                    backgroundPosition: tile.getBgX() + 'px ' + tile.getBgY() + 'px',
+                    transform:'rotate('+ tile.getRotation() +'deg)'
                 });
             }
         },
@@ -97,11 +112,15 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
         removeTile: function() {
             if(this.currentTool !== 0) return;
             if(!this.mdown) return;
-            if(my > this.map.mapsizeY-1 || mx > this.map.mapsizeX-1) return;
 
             var tile = this.map.tiles[my][mx];
-            this.$(tile).remove();
+            if (typeof(tile) === 'undefined') return;
+            this.$(tile.getElement()).remove();
             this.map.tiles[my][mx] = undefined;
+        },
+
+        drawTile: function(tile) {
+            this.$("#map div:last").before(tile.getElement());
         },
 
         //Clears the interval and reset mdown variable
@@ -131,7 +150,7 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
                 var tile = this.map.tiles[my][mx];
 
                 if (typeof(tile) != 'undefined') {
-                    var mapPos = $(tile).css('background-position').split(' ');
+                    var mapPos = $(tile.getElement()).css('background-position').split(' ');
                     Backbone.trigger("currentTile", [parseInt(mapPos[0]), parseInt(mapPos[1])]);
                 }
             }
