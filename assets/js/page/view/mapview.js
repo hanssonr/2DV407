@@ -19,9 +19,11 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
         trigger: null,
         rotation: 0,
         currentTile: null,
+        currentTool: 1,
 
         initialize: function(opts) {
             this.listenTo(Backbone, "currentTile", this.currentTileChange);
+            this.listenTo(Backbone, "toolChange", this.setCurrentTool);
             this.map = opts;
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
@@ -29,6 +31,7 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
 
         currentTileChange: function(e) {
             this.currentTile = e;
+            this.setCurrentTool(1);
         },
 
         events: {
@@ -51,8 +54,17 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
             my = Math.floor((e.pageY - offsety) / this.map.tilesize);
         },
 
+        /*
+            0 == erase
+            1 == draw
+         */
+        setCurrentTool: function(toolID) {
+            this.currentTool = toolID;
+        },
+
         //Draws a tile to #Map and puts it into the array in the map-object
         setTile: function() {
+            if(this.currentTool !== 1) return;
             if(!this.mdown) return;
             if(this.currentTile == null) return;
             if(my > this.map.mapsizeY-1 || mx > this.map.mapsizeX-1) return;
@@ -81,6 +93,17 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
             }
         },
 
+        //removes a tile from the map
+        removeTile: function() {
+            if(this.currentTool !== 0) return;
+            if(!this.mdown) return;
+            if(my > this.map.mapsizeY-1 || mx > this.map.mapsizeX-1) return;
+
+            var tile = this.map.tiles[my][mx];
+            this.$(tile).remove();
+            this.map.tiles[my][mx] = undefined;
+        },
+
         //Clears the interval and reset mdown variable
         mouseup: function(e) {
             this.mdown = false;
@@ -92,7 +115,13 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
             if(e.button == 0) {
                 var that = this;
                 this.mdown = true;
-                this.trigger = setInterval(function() {that.setTile();}, 10);
+
+                if(this.currentTool == 1) {
+                    this.trigger = setInterval(function() {that.setTile();}, 10);
+                }
+                else if (this.currentTool == 0) {
+                    this.trigger = setInterval(function() {that.removeTile();}, 10);
+                }
             }
             else if(e.button == 1) {
                 e.preventDefault();
@@ -103,7 +132,7 @@ define(['backbone', 'handlebars', 'text!../templates/mapTemplate.html'],
 
                 if (typeof(tile) != 'undefined') {
                     var mapPos = $(tile).css('background-position').split(' ');
-                    this.currentTile = [parseInt(mapPos[0]), parseInt(mapPos[1])];
+                    Backbone.trigger("currentTile", [parseInt(mapPos[0]), parseInt(mapPos[1])]);
                 }
             }
         },

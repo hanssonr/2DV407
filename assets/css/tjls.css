@@ -30,12 +30,27 @@ html, body {  height: 100%; width: 100%; }
     bottom: 0px;
 }
 
-#tools {
+#currenttile {
     background-color: #006dcc;
     border: 10px solid #202220;
     margin: 5px;
     height: 64px;
     width: 64px;
+    float:left;
+}
+
+#tools {
+    float:left;
+    width: 40px;
+    height: 100px;
+    z-index: 5;
+    border-bottom: 1px solid #464646;
+    border-right: 1px solid #464646;
+    border-left: 1px solid #464646;
+    background-color: #2f312f;
+    position: absolute;
+    top: 0px;
+    left: 350px;
 }
 
 #map-wrapper {

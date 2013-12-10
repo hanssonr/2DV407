@@ -31,15 +31,10 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
             return this;
         },
 
-        //show active tile as well as set active tile in editor
+        //trigger current tile event
         setActiveTile: function(e) {
             var x = -tx * this.tilesize;
             var y = -ty * this.tilesize;
-            $('#tools').css({
-                backgroundImage: 'url('+this.url+')',
-                backgroundPosition: x + 'px ' + y + 'px'
-            });
-
             Backbone.trigger("currentTile", [x, y]);
         },
 

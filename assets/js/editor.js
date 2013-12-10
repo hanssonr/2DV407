@@ -17,6 +17,7 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         mapheight: 10,
         map: null,
         mapbg: null,
+        currentTool: 1,
 
         initialize: function(opts) {
             this.listenTo(Backbone, "newMapEvent", this.createNewSetup);
@@ -52,7 +53,7 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                 that.render();
 
                 that.$('#tileset').css({width: img.width, height: img.height});
-                that.$('#tools').css({width: that.tilesize, height: that.tilesize});
+                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
                 that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
                 that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
                 that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
