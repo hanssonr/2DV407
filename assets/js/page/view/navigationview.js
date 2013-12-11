@@ -44,7 +44,9 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'savemapview', 'tex
             },
 
             render: function() {
+                this.$el.empty();
                 this.$el.html(this.template(this));
+                this.delegateEvents();
                 return this;
             },
 

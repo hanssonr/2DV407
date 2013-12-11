@@ -40,7 +40,9 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         },
 
         render: function() {
+            this.$el.empty();
             this.$el.append(this.template(this));
+            this.delegateEvents();
 
             //append sub-view
             this.$el.append(this.tileset.render().el);

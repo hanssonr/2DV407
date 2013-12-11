@@ -96,8 +96,6 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
 
         render: function() {
             this.$el.empty();
-
-            console.log(this.$el);
             var that = this;
             this.childviews.forEach(function(view) {
                 that.$el.append(view.render().el);
@@ -105,6 +103,7 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
         },
 
         update: function(opts) {
+            console.log("Editor::update", opts);
             this.url = opts.url;
             this.tilesize = opts.tilesize;
             this.mapwidth = opts.mapwidth;
@@ -112,12 +111,9 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
             opts.map = this.map;
 
             var that = this;
-            this.imageLoader(this.url, function() {
+            this.imageLoader(this.url, function(img) {
                 that.map.update(opts);
-
-                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
-                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+                that.calculateMapBg();
 
                 //update subviews
                 that.childviews.forEach(function(view) {
@@ -125,6 +121,13 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
                 });
 
                 that.render();
+
+                that.$('#tileset').css({width: img.width, height: img.height});
+                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
+                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
+                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
+                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+                that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
             });
 
         }
