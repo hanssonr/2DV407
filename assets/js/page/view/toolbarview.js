@@ -1,10 +1,12 @@
 /**
  * Created by rkh on 2013-11-25.
  */
-define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTemplate.html'],
-    function(Backbone, Handlebars, TilesetView, toolbarTemplate) {
+define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/toolbarTemplate.html'],
+    function(Backbone, Handlebars, BaseView, TilesetView, toolbarTemplate) {
 
     var ToolbarView = Backbone.View.extend({
+
+        childviews: [],
         id: 'toolbar',
         template: Handlebars.compile( toolbarTemplate ),
 
@@ -14,6 +16,7 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
         },
 
         erase: function() {
+            console.log("erase");
             Backbone.trigger("toolChange", 0);
         },
 
@@ -23,9 +26,10 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
 
         //get url and tilesize from the editor
         initialize: function(opts) {
+            this.listenTo(Backbone, "currentTile", this.showActiveTile);
             this.url = opts.url;
             this.tileset = new TilesetView(opts);
-            this.listenTo(Backbone, "currentTile", this.showActiveTile);
+            this.childviews.push(this.tileset);
         },
 
         showActiveTile: function(pos) {
@@ -41,6 +45,15 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
             //append sub-view
             this.$el.append(this.tileset.render().el);
             return this;
+        },
+
+        update: function(opts) {
+            console.log("... ToolBarView::update");
+            this.url = opts.url;
+
+            this.childviews.forEach(function(view) {
+                view.update(opts);
+            });
         }
     });
 

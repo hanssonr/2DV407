@@ -39,6 +39,15 @@ define(['backbone', 'tilemodel'],
                 console.log(this);
             },
 
+            destroy: function() {
+                this.stopListening();
+            },
+
+            update: function(opts) {
+                this.stopListening();
+                this.initialize(opts);
+            },
+
             addTileArray: function(array) {
                 for (var y=0; y < array.length; y++) {
                     for (var x=0; x < array[y].length; x++) {

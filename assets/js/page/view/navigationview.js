@@ -46,6 +46,10 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'savemapview', 'tex
             render: function() {
                 this.$el.html(this.template(this));
                 return this;
+            },
+
+            update: function() {
+
             }
         });
 

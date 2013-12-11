@@ -174,9 +174,14 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         },
 
         render: function() {
-            this.$el.empty();
             this.$el.html(this.template(this));
             return this;
+        },
+
+        update: function(opts) {
+            this.map = opts.map;
+            this.mapwidth = this.map.getCalculatedWidth();
+            this.mapheight = this.map.getCalculatedHeight();
         }
     });
 

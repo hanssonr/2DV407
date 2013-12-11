@@ -3,11 +3,12 @@
  */
 //init the application
 
-define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
-    function($, Backbone, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
+define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
+    function($, Backbone, BaseView, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
 
     var Editor = Backbone.View.extend({
 
+        childviews: [],
         id: "container",
 
         //defaults
@@ -20,35 +21,37 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
 
         initialize: function(opts) {
             this.listenTo(Backbone, "newMapEvent", this.createNewSetup);
-            this.listenTo(Backbone, "openMapEvent", this.createNewSetup);
+            this.listenTo(Backbone, "openMapEvent", this.update);
+
+            this.createMap();
+            this.calculateMapBg();
+            this.navigationview = new NavigationView();
+            this.toolbarview = new ToolbarView(this.map);
+            this.mapview = new MapView(this.map);
+
+            this.childviews.push(this.navigationview);
+            this.childviews.push(this.toolbarview);
+            this.childviews.push(this.mapview);
+
             this.createNewSetup();
         },
 
         //Backbone event-callback for creating a new map
         createNewSetup: function(opts) {
-            if (typeof(opts) != 'undefined') {
+/*            if (typeof(opts) != 'undefined') {
                 this.url = opts.url;
                 this.tilesize = opts.tilesize;
                 this.mapwidth = opts.mapwidth;
                 this.mapheight = opts.mapheight;
 
-/*                if (typeof(opts.tiles) != 'undefined') {
+                if (typeof(opts.tiles) != 'undefined') {
                     this.map = this.createMap();
                     this.map.addTileArray(opts.tiles);
-                }*/
-            }
+                }
+            }*/
 
-            this.createMap();
-            this.calculateMapBg();
-
-            var img = new Image();
-            img.src = this.url;
             var that = this;
-
-            $(img).load(function() {
-                that.toolview = new ToolbarView(that.map);
-                that.mapview = new MapView(that.map);
-                that.navigationview = new NavigationView();
+            this.imageLoader(this.url, function(img) {
                 that.render();
 
                 that.$('#tileset').css({width: img.width, height: img.height});
@@ -57,6 +60,16 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
                 that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
                 that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
                 that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
+            });
+        },
+
+        imageLoader: function(url, callback) {
+            var img = new Image();
+            img.src = url;
+            var that = this;
+
+            $(img).load(function() {
+                callback(img);
             });
         },
 
@@ -84,9 +97,36 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         render: function() {
             this.$el.empty();
 
-            this.$el.append(this.navigationview.render().el);
-            this.$el.append(this.toolview.render().el);
-            this.$el.append(this.mapview.render().el);
+            console.log(this.$el);
+            var that = this;
+            this.childviews.forEach(function(view) {
+                that.$el.append(view.render().el);
+            });
+        },
+
+        update: function(opts) {
+            this.url = opts.url;
+            this.tilesize = opts.tilesize;
+            this.mapwidth = opts.mapwidth;
+            this.mapheight = opts.mapheight;
+            opts.map = this.map;
+
+            var that = this;
+            this.imageLoader(this.url, function() {
+                that.map.update(opts);
+
+                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
+                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
+                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+
+                //update subviews
+                that.childviews.forEach(function(view) {
+                    view.update(opts);
+                });
+
+                that.render();
+            });
+
         }
     });
 

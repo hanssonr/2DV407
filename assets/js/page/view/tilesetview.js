@@ -16,7 +16,6 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
 
         //get url and tilesize from the toolbarview
         initialize: function(opts) {
-            this.el = this.$el;
             this.url = opts.url;
             this.tilesize = opts.tilesize;
         },
@@ -45,6 +44,12 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
             tx = Math.floor((e.pageX - offsetx) / this.tilesize);
             ty = Math.floor((e.pageY - offsety) / this.tilesize);
             $('#toolbar .selector').css('top', ty * this.tilesize).css('left', tx * this.tilesize);
+        },
+
+        update: function(opts) {
+            console.log("... TilesetView::update");
+            this.url = opts.url;
+            this.tilesize = opts.tileize;
         }
     });
 

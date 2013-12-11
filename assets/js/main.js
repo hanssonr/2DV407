@@ -6,6 +6,7 @@ require.config({
     baseUrl: 'assets/js/',
     paths: {
         text: 'lib/text',
+        editor: 'page/view/editor',
         jquery: 'lib/jquery/jquery-2.0.3',
         jquerymousewheel: 'lib/jquery/jquery.mousewheel',
         purebackbone: 'lib/backbone/purebackbone',
@@ -14,6 +15,7 @@ require.config({
         underscore: 'lib/underscore',
         bootstrap: 'lib/bootstrap',
         handlebars: 'lib/handlebars-v1.1.2',
+        baseview: 'page/view/baseview',
         toolbarview: 'page/view/toolbarview',
         savemapview: 'page/view/savemapview',
         mapview: 'page/view/mapview',
