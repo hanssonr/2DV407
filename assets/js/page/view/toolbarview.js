@@ -12,7 +12,12 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
 
         events: {
             "click #eraser": "erase",
-            "click #draw": "draw"
+            "click #draw": "draw",
+            "click #rotate": "rotate"
+        },
+
+        rotate: function() {
+            Backbone.trigger("rotateTile");
         },
 
         erase: function() {
@@ -26,7 +31,7 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         //get url and tilesize from the editor
         initialize: function(opts) {
             this.listenTo(Backbone, "currentTile", this.showActiveTile);
-            this.url = opts.url;
+            this.url = opts.map.url;
             this.tileset = new TilesetView(opts);
             this.childviews.push(this.tileset);
         },

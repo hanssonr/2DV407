@@ -8,7 +8,6 @@ define(['backbone', 'tilemodel'],
 
             initialize: function(opts) {
                 this.update(opts);
-                this.listenTo(Backbone, "saveMap", this.createJSON)
             },
 
             createTileArray: function() {
@@ -29,12 +28,29 @@ define(['backbone', 'tilemodel'],
                 return this.mapheight * this.tilesize;
             },
 
-            createJSON: function() {
-                console.log(this);
+            createJSONString: function() {
+                var output = {
+                    "url": this.url,
+                    "mapwidth": this.mapwidth,
+                    "mapheight": this.mapheight,
+                    "tilesize": this.tilesize,
+                    "tiles": this.generateTiles()
+                }
+
+                return JSON.stringify(output);
             },
 
-            getTilesize: function() {
-                return this.get("tilesize");
+            generateTiles: function() {
+                var temp = [];
+                for(var y = 0; y < this.mapheight; y++) {
+                    temp.push([]);
+                    for (var x = 0; x < this.mapwidth; x++) {
+                        if (typeof(this.tiles[y][x]) != 'undefined') {
+                            temp[y].push(this.tiles[y][x].toReadable());
+                        }
+                    }
+                }
+                return temp;
             },
 
             update: function(opts) {
@@ -52,7 +68,9 @@ define(['backbone', 'tilemodel'],
             addToTileArray: function(array) {
                 for (var y=0; y < array.length; y++) {
                     for (var x=0; x < array[y].length; x++) {
-                        this.tiles[y][x] = new Tile(array[y][x]);
+                        var tx = array[y][x].position[0];
+                        var ty = array[y][x].position[1];
+                        this.tiles[ty][tx] = new Tile(array[y][x]);
                     }
                 }
             }

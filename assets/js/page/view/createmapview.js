@@ -14,9 +14,6 @@ define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
                 'click #newmap-cancel' : 'cancelCreation'
             },
 
-            initialize: function(opts) {
-            },
-
             //Validates form input
             validateMapCredentials: (function(e) {
                 if (this.$('form')[0].checkValidity()) {
@@ -25,7 +22,7 @@ define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
                     var that = this;
 
                     Backbone.trigger("validatePicture", data[0].value, function(img) {
-                        if (img != false) {
+                        if (img !== false) {
                             Backbone.trigger("newMapEvent", {
                                 url: data[0].value,
                                 tilesize: parseInt(data[1].value),

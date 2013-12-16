@@ -1,8 +1,8 @@
 /**
  * Created by rkh on 2013-12-03.
  */
-define(['backbone', 'handlebars', 'editor', 'createmapview', 'savemapview', 'text!../templates/navigationTemplate.html'],
-    function(Backbone, Handlebars, Editor, CreateMapView, SaveMapView, navigationTemplate) {
+define(['backbone', 'handlebars', 'editor', 'createmapview', 'openmapview', 'text!../templates/navigationTemplate.html'],
+    function(Backbone, Handlebars, Editor, CreateMapView, OpenMapView, navigationTemplate) {
 
         var NavigationView = Backbone.View.extend({
 
@@ -19,28 +19,17 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'savemapview', 'tex
             },
 
             newMap: function() {
-                var create = new CreateMapView(this.editor);
+                var create = new CreateMapView();
                 this.$el.parent().append(create.render().el);
             },
 
-            //TODO read input file from user
             openMap: function() {
-                var test = $.getJSON("mall.json", function(data) {
-                    Backbone.trigger("openMapEvent", {
-                        url: data.url,
-                        tilesize: data.tilesize,
-                        mapwidth: data.mapwidth,
-                        mapheight: data.mapheight,
-                        tiles: data.tiles
-                    });
-                });
-
+                var open = new OpenMapView();
+                this.$el.parent().append(open.render().el);
             },
 
             saveMap: function() {
                 Backbone.trigger("saveMap");
-                /*var save = new SaveMapView();
-                this.$el.parent().append(save.render().el);*/
             },
 
             render: function() {

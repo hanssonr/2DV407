@@ -26,8 +26,8 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
 
             this.createMap();
             this.navigationview = new NavigationView();
-            this.toolbarview = new ToolbarView(this.map);
-            this.mapview = new MapView(this.map);
+            this.toolbarview = new ToolbarView({map: this.map});
+            this.mapview = new MapView({map: this.map});
 
             this.childviews.push(this.toolbarview);
             this.childviews.push(this.mapview);
@@ -106,8 +106,8 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
                 that.$('#tileset').css({width: img.width, height: img.height});
                 that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
                 that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
                 that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
+                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
                 that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
             });
 

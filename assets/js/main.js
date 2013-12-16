@@ -17,7 +17,7 @@ require.config({
         handlebars: 'lib/handlebars-v1.1.2',
         baseview: 'page/view/baseview',
         toolbarview: 'page/view/toolbarview',
-        savemapview: 'page/view/savemapview',
+        openmapview: 'page/view/openmapview',
         mapview: 'page/view/mapview',
         mapmodel: 'page/model/map',
         tilemodel: 'page/model/tile',

@@ -16,8 +16,8 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
 
         //get url and tilesize from the toolbarview
         initialize: function(opts) {
-            this.url = opts.url;
-            this.tilesize = opts.tilesize;
+            this.url = opts.map.url;
+            this.tilesize = opts.map.tilesize;
         },
 
         events: {

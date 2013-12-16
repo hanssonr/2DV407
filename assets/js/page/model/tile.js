@@ -47,6 +47,14 @@ define(['backbone'], function(Backbone) {
 
         getRotation: function() {
             return this.get("rotation");
+        },
+
+        toReadable: function() {
+            return {
+                position: this.get('position'),
+                bgPosition: this.get('bgPosition'),
+                rotation: this.get('rotation')
+            }
         }
     });
 

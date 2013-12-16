@@ -22,10 +22,23 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         currentTool: 1,
         temptiles: [],
 
+        events: {
+            'mousemove #map': 'hoverMap',
+            'mousedown #map': 'mousedown',
+            'mouseup': 'mouseup',
+            'contextmenu #map': 'contextmenu'
+        },
+
         initialize: function(opts) {
+            this.listenTo(Backbone, "saveMap", this.saveMap);
             this.listenTo(Backbone, "currentTile", this.currentTileChange);
             this.listenTo(Backbone, "toolChange", this.setCurrentTool);
-            this.map = opts;
+            this.listenTo(Backbone, "rotateTile", function() {
+                this.rotateTile();
+                this.showOpaqueTile();
+            });
+
+            this.map = opts.map;
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
         },
@@ -35,11 +48,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             this.setCurrentTool(1);
         },
 
-        events: {
-            'mousemove #map': 'hoverMap',
-            'mousedown #map': 'mousedown',
-            'mouseup': 'mouseup',
-            'contextmenu #map': 'contextmenu'
+        saveMap: function() {
+            window.open("data:text/JSON;charset=UTF-8;," + this.map.createJSONString(), "_blank");
         },
 
         //Remove contextmenu
@@ -127,6 +137,10 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             return div;
         },
 
+        rotateTile: function() {
+            this.rotation = this.rotation + 90 > 270 ? 0 : this.rotation + 90;
+        },
+
         //removes a tile from the map
         removeTile: function() {
             if(this.currentTool !== 0) return;
@@ -139,7 +153,6 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         },
 
         drawTile: function(tile) {
-            console.log(tile);
             this.$("#map div:last").before(tile.getElement());
         },
 
@@ -164,7 +177,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             }
             else if(e.button == 1) { //Rotate
                 e.preventDefault();
-                this.rotation = this.rotation + 90 > 270 ? 0 : this.rotation + 90;
+                this.rotateTile();
             }
             else if(e.button == 2) { //Copy tile from map
                 var tile = this.map.tiles[this.my][this.mx];
@@ -184,6 +197,10 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                 left: this.mx * this.map.tilesize
             });
 
+            this.showOpaqueTile();
+        },
+
+        showOpaqueTile: function() {
             if(this.currentTile === null) {
                 this.$('.selector').css({backgroundImage: 'url('+ +')'});
             } else {
