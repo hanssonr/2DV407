@@ -22,32 +22,22 @@ define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
                 if (this.$('form')[0].checkValidity()) {
                     e.preventDefault();
                     var data = this.$('form').serializeArray();
+                    var that = this;
 
-                    this.loadMapImage(data[0].value, function() {
-                        Backbone.trigger("newMapEvent", {
-                            url: data[0].value,
-                            tilesize: parseInt(data[1].value),
-                            mapwidth: parseInt(data[2].value),
-                            mapheight: parseInt(data[3].value)
-                         });
+                    Backbone.trigger("validatePicture", data[0].value, function(img) {
+                        if (img != false) {
+                            Backbone.trigger("newMapEvent", {
+                                url: data[0].value,
+                                tilesize: parseInt(data[1].value),
+                                mapwidth: parseInt(data[2].value),
+                                mapheight: parseInt(data[3].value)
+                            });
+                        } else {
+                            that.outputError("The URL is not a valid image")
+                        }
                     });
                 }
             }),
-
-            //loads up a img from a url and uses callback to create a new map
-            //if everything goes right
-            loadMapImage: function(url, callback) {
-                var img = new Image();
-                img.src = url;
-                var that = this;
-
-                $(img).load(function() {
-                    callback();
-                })
-                .error(function() {
-                    that.outputError("The URL is not a valid image")
-                });
-            },
 
             //Outputs error to the form
             outputError: function(error) {

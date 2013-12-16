@@ -41,6 +41,10 @@ define(['backbone'], function(Backbone) {
             return this.get("element");
         },
 
+        setElement: function(div) {
+            this.set({element: div});
+        },
+
         getRotation: function() {
             return this.get("rotation");
         }

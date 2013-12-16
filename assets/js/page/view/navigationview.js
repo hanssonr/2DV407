@@ -48,10 +48,6 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'savemapview', 'tex
                 this.$el.html(this.template(this));
                 this.delegateEvents();
                 return this;
-            },
-
-            update: function() {
-
             }
         });
 

@@ -20,46 +20,23 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
         mapbg: null,
 
         initialize: function(opts) {
-            this.listenTo(Backbone, "newMapEvent", this.createNewSetup);
+            this.listenTo(Backbone, "newMapEvent", this.update);
             this.listenTo(Backbone, "openMapEvent", this.update);
+            this.listenTo(Backbone, "validatePicture", this.imageLoader);
 
             this.createMap();
-            this.calculateMapBg();
             this.navigationview = new NavigationView();
             this.toolbarview = new ToolbarView(this.map);
             this.mapview = new MapView(this.map);
 
-            this.childviews.push(this.navigationview);
             this.childviews.push(this.toolbarview);
             this.childviews.push(this.mapview);
 
-            this.createNewSetup();
-        },
-
-        //Backbone event-callback for creating a new map
-        createNewSetup: function(opts) {
-/*            if (typeof(opts) != 'undefined') {
-                this.url = opts.url;
-                this.tilesize = opts.tilesize;
-                this.mapwidth = opts.mapwidth;
-                this.mapheight = opts.mapheight;
-
-                if (typeof(opts.tiles) != 'undefined') {
-                    this.map = this.createMap();
-                    this.map.addTileArray(opts.tiles);
-                }
-            }*/
-
-            var that = this;
-            this.imageLoader(this.url, function(img) {
-                that.render();
-
-                that.$('#tileset').css({width: img.width, height: img.height});
-                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
-                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
-                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
-                that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
+            this.update({
+                url: this.url,
+                tilesize: this.tilesize,
+                mapwidth: this.mapwidth,
+                mapheight: this.mapheight
             });
         },
 
@@ -70,6 +47,9 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
 
             $(img).load(function() {
                 callback(img);
+            })
+            .error(function() {
+                callback(false);
             });
         },
 
@@ -97,13 +77,14 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
         render: function() {
             this.$el.empty();
             var that = this;
+
+            this.$el.append(this.navigationview.render().el);
             this.childviews.forEach(function(view) {
                 that.$el.append(view.render().el);
             });
         },
 
         update: function(opts) {
-            console.log("Editor::update", opts);
             this.url = opts.url;
             this.tilesize = opts.tilesize;
             this.mapwidth = opts.mapwidth;

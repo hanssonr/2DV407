@@ -18,8 +18,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         mdown: false,
         trigger: null,
         rotation: 0,
-        currentTile: null,
+        currentTile: [0,0],
         currentTool: 1,
+        temptiles: [],
 
         initialize: function(opts) {
             this.listenTo(Backbone, "currentTile", this.currentTileChange);
@@ -50,14 +51,14 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         calculatePosition: function(e) {
             offsetx = $('#map').offset().left;
             offsety = $('#map').offset().top;
-            mx = Math.floor((e.pageX - offsetx) / this.map.tilesize);
-            my = Math.floor((e.pageY - offsety) / this.map.tilesize);
+            this.mx = Math.floor((e.pageX - offsetx) / this.map.tilesize);
+            this.my = Math.floor((e.pageY - offsety) / this.map.tilesize);
 
             //fix for getting pos < 0 || pos > mapwidth/mapheight
-            if (mx > this.map.mapwidth-1) { mx = this.map.mapwidth-1; }
-            else if (mx < 0) { mx = 0; }
-            if (my > this.map.mapheight-1) { my = this.map.mapheight-1; }
-            else if (my < 0) { my = 0; }
+            if (this.mx > this.map.mapwidth-1) { this.mx = this.map.mapwidth-1; }
+            else if (this.mx < 0) { this.mx = 0; }
+            if (this.my > this.map.mapheight-1) { this.my = this.map.mapheight-1; }
+            else if (this.my < 0) { this.my = 0; }
         },
 
         /*
@@ -74,29 +75,17 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             if(!this.mdown) return;
             if(this.currentTile == null) return;
 
-            var tile = this.map.tiles[my][mx];
+            var tile = this.map.tiles[this.my][this.mx];
 
             if (typeof(tile) === 'undefined') {
-                var div = $("<div></div>");
-                $(div).css({
-                    position: 'absolute',
-                    top: my * this.map.tilesize,
-                    left: mx * this.map.tilesize,
-                    width: this.map.tilesize,
-                    height: this.map.tilesize,
-                    backgroundImage: 'url('+this.map.url+')',
-                    backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
-                    transform:'rotate('+ this.rotation +'deg)'
-                });
-
                 tile = new Tile({
-                    position: [mx, my],
+                    position: [this.mx, this.my],
                     bgPosition: [this.currentTile[0], this.currentTile[1]],
-                    element: div,
+                    element: this.createDOMElement(),
                     rotation: this.rotation
                 });
 
-                this.map.tiles[my][mx] = tile;
+                this.map.tiles[this.my][this.mx] = tile;
                 this.drawTile(tile);
             } else {
                 tile.setBackgroundPosition([this.currentTile[0], this.currentTile[1]]);
@@ -108,18 +97,49 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             }
         },
 
+        createDOMElement: function(input) {
+            var tileX = this.mx;
+            var tileY = this.my;
+            var bgX = this.currentTile[0];
+            var bgY = this.currentTile[1];
+            var rotation = this.rotation;
+
+            if (input) {
+                tileX = input.getTileX();
+                tileY = input.getTileY();
+                bgX = input.getBgX();
+                bgY = input.getBgY();
+                rotation = input.getRotation();
+            }
+
+            var div = $("<div></div>");
+            $(div).css({
+                position: 'absolute',
+                top: tileY * this.map.tilesize,
+                left: tileX * this.map.tilesize,
+                width: this.map.tilesize,
+                height: this.map.tilesize,
+                backgroundImage: 'url('+this.map.url+')',
+                backgroundPosition: bgX + 'px ' + bgY + 'px',
+                transform:'rotate('+ rotation +'deg)'
+            });
+
+            return div;
+        },
+
         //removes a tile from the map
         removeTile: function() {
             if(this.currentTool !== 0) return;
             if(!this.mdown) return;
 
-            var tile = this.map.tiles[my][mx];
+            var tile = this.map.tiles[this.my][this.mx];
             if (typeof(tile) === 'undefined') return;
             this.$(tile.getElement()).remove();
-            this.map.tiles[my][mx] = undefined;
+            this.map.tiles[this.my][this.mx] = undefined;
         },
 
         drawTile: function(tile) {
+            console.log(tile);
             this.$("#map div:last").before(tile.getElement());
         },
 
@@ -131,7 +151,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
 
         //Takes care of mousedown commands and do the appropriate thing depending on mousebutton
         mousedown: function(e) {
-            if(e.button == 0) {
+            if(e.button == 0) { //Draw
                 var that = this;
                 this.mdown = true;
 
@@ -142,12 +162,12 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                     this.trigger = setInterval(function() {that.removeTile();}, 10);
                 }
             }
-            else if(e.button == 1) {
+            else if(e.button == 1) { //Rotate
                 e.preventDefault();
                 this.rotation = this.rotation + 90 > 270 ? 0 : this.rotation + 90;
             }
-            else if(e.button == 2) {
-                var tile = this.map.tiles[my][mx];
+            else if(e.button == 2) { //Copy tile from map
+                var tile = this.map.tiles[this.my][this.mx];
 
                 if (typeof(tile) != 'undefined') {
                     var mapPos = $(tile.getElement()).css('background-position').split(' ');
@@ -159,12 +179,15 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         //Moves the selector over the #Map via CSS
         hoverMap: function(e) {
             this.calculatePosition(e);
-            $('#map-wrapper .selector').css('top', my * this.map.tilesize).css('left', mx * this.map.tilesize);
+            this.$('.selector').css({
+                top: this.my * this.map.tilesize,
+                left: this.mx * this.map.tilesize
+            });
 
             if(this.currentTile === null) {
-                $('#map-wrapper .selector').css({backgroundImage: 'url('+ +')'});
+                this.$('.selector').css({backgroundImage: 'url('+ +')'});
             } else {
-                $('#map-wrapper .selector').css({
+                this.$('.selector').css({
                     backgroundImage: 'url('+this.map.url+')',
                     backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     opacity: 0.5,
@@ -175,6 +198,17 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
 
         render: function() {
             this.$el.html(this.template(this));
+
+            if (this.temptiles.length != 0) {
+                var that = this;
+                this.temptiles.forEach(function(tile) {
+                    that.drawTile(tile);
+                });
+
+                this.temptiles = [];
+            }
+
+            this.delegateEvents();
             return this;
         },
 
@@ -182,6 +216,16 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             this.map = opts.map;
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
+
+            var that = this;
+            this.map.tiles.forEach(function(cols) {
+                cols.forEach(function(tile) {
+                    if(typeof(tile) !== "undefined") {
+                        tile.setElement(that.createDOMElement(tile));
+                        that.temptiles.push(tile);
+                    }
+                })
+            });
         }
     });
 

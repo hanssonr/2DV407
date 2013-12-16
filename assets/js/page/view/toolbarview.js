@@ -16,7 +16,6 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         },
 
         erase: function() {
-            console.log("erase");
             Backbone.trigger("toolChange", 0);
         },
 
@@ -50,7 +49,6 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         },
 
         update: function(opts) {
-            console.log("... ToolBarView::update");
             this.url = opts.url;
 
             this.childviews.forEach(function(view) {

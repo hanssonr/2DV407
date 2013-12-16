@@ -34,7 +34,6 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
 
         //trigger current tile event
         setActiveTile: function(e) {
-            console.log("setactivetile");
             var x = -tx * this.tilesize;
             var y = -ty * this.tilesize;
             Backbone.trigger("currentTile", [x, y]);
@@ -42,18 +41,14 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
 
         //moves the selector to the current tile hoovered
         hoverTileset: function(e) {
-            console.log("hovertiles");
             offsetx = this.$('#tileset').offset().left;
             offsety = this.$('#tileset').offset().top;
             tx = Math.floor((e.pageX - offsetx) / this.tilesize);
             ty = Math.floor((e.pageY - offsety) / this.tilesize);
-            console.log(this);
-            //console.log(tx, ty);
             $('#toolbar .selector').css('top', ty * this.tilesize).css('left', tx * this.tilesize);
         },
 
         update: function(opts) {
-            console.log("... TilesetView::update");
             this.url = opts.url;
             this.tilesize = opts.tilesize;
         }
