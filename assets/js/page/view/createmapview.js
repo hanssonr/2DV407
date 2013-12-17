@@ -21,9 +21,9 @@ define(['backbone', 'handlebars', 'text!../templates/createMapTemplate.html'],
                     var data = this.$('form').serializeArray();
                     var that = this;
 
-                    Backbone.trigger("validatePicture", data[0].value, function(img) {
+                    Backbone.trigger("VALIDATE_PICTURE", data[0].value, function(img) {
                         if (img !== false) {
-                            Backbone.trigger("newMapEvent", {
+                            Backbone.trigger("MAP_EVENT", {
                                 url: data[0].value,
                                 tilesize: parseInt(data[1].value),
                                 mapwidth: parseInt(data[2].value),

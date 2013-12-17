@@ -1,8 +1,8 @@
 /**
  * Created by rkh on 2013-12-03.
  */
-define(['backbone', 'handlebars', 'editor', 'createmapview', 'openmapview', 'text!../templates/navigationTemplate.html'],
-    function(Backbone, Handlebars, Editor, CreateMapView, OpenMapView, navigationTemplate) {
+define(['backbone', 'handlebars', 'createmapview', 'openmapview', 'text!../templates/navigationTemplate.html'],
+    function(Backbone, Handlebars, CreateMapView, OpenMapView, navigationTemplate) {
 
         var NavigationView = Backbone.View.extend({
 
@@ -13,9 +13,11 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'openmapview', 'tex
             },
 
             events: {
+                'mousedown': function() {return false;},
                 'click #nav-new': 'newMap',
                 'click #nav-open': 'openMap',
-                'click #nav-save': 'saveMap'
+                'click #nav-save': 'saveMap',
+                'click #nav-export': 'exportMap'
             },
 
             newMap: function() {
@@ -29,7 +31,11 @@ define(['backbone', 'handlebars', 'editor', 'createmapview', 'openmapview', 'tex
             },
 
             saveMap: function() {
-                Backbone.trigger("saveMap");
+                Backbone.trigger("SAVE_MAP");
+            },
+
+            exportMap: function() {
+                Backbone.trigger("EXPORT_MAP");
             },
 
             render: function() {

@@ -14,12 +14,6 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
         offsetx: 0,
         offsety: 0,
 
-        //get url and tilesize from the toolbarview
-        initialize: function(opts) {
-            this.url = opts.map.url;
-            this.tilesize = opts.map.tilesize;
-        },
-
         events: {
             'mousemove #tileset': 'hoverTileset',
             'click .selector': 'setActiveTile'
@@ -36,7 +30,8 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
         setActiveTile: function(e) {
             var x = -tx * this.tilesize;
             var y = -ty * this.tilesize;
-            Backbone.trigger("currentTile", [x, y]);
+            Backbone.trigger("CURRENT_TILE", [x, y]);
+            Backbone.trigger("TOOL_CHANGE", 1);
         },
 
         //moves the selector to the current tile hoovered

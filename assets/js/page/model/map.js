@@ -5,12 +5,6 @@ define(['backbone', 'tilemodel'],
     function(Backbone, Tile) {
 
         var Map = Backbone.Model.extend({
-            localStorage: new Backbone.LocalStorage('Map'),
-
-            initialize: function(opts) {
-                this.tiles = [];
-                this.update(opts);
-            },
 
             createTileArray: function() {
                 for (var y=0; y < this.mapheight; y++) {
@@ -55,6 +49,7 @@ define(['backbone', 'tilemodel'],
             },
 
             update: function(opts) {
+                this.tiles = [];
                 this.mapwidth = opts.mapwidth;
                 this.mapheight = opts.mapheight;
                 this.tilesize = opts.tilesize;

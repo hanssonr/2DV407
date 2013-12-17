@@ -23,33 +23,36 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         temptiles: [],
 
         events: {
+            'mousedown': function() {return false;},
             'mousemove #map': 'hoverMap',
+            'mouseleave #map' : 'mouseup',
             'mousedown #map': 'mousedown',
             'mouseup': 'mouseup',
             'contextmenu #map': 'contextmenu'
         },
 
-        initialize: function(opts) {
-            this.listenTo(Backbone, "saveMap", this.saveMap);
-            this.listenTo(Backbone, "currentTile", this.currentTileChange);
-            this.listenTo(Backbone, "toolChange", this.setCurrentTool);
-            this.listenTo(Backbone, "rotateTile", function() {
+        initialize: function() {
+            this.listenTo(Backbone, "EXPORT_MAP", this.exportMap);
+            this.listenTo(Backbone, "SAVE_MAP", this.saveMap);
+            this.listenTo(Backbone, "CURRENT_TILE", this.currentTileChange);
+            this.listenTo(Backbone, "TOOL_CHANGE", this.setCurrentTool);
+            this.listenTo(Backbone, "ROTATE_TILE", function() {
                 this.rotateTile();
                 this.showOpaqueTile();
             });
-
-            this.map = opts.map;
-            this.mapwidth = this.map.getCalculatedWidth();
-            this.mapheight = this.map.getCalculatedHeight();
         },
 
         currentTileChange: function(e) {
             this.currentTile = e;
-            this.setCurrentTool(1);
+            this.rotation = 0;
+        },
+
+        exportMap: function() {
+            window.open("data:text/JSON;charset=UTF-8;," + this.map.createJSONString(), "_blank");
         },
 
         saveMap: function() {
-            window.open("data:text/JSON;charset=UTF-8;," + this.map.createJSONString(), "_blank");
+            localStorage.setItem("TJLS_MAP", this.map.createJSONString());
         },
 
         //Remove contextmenu
@@ -139,6 +142,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
 
         rotateTile: function() {
             this.rotation = this.rotation + 90 > 270 ? 0 : this.rotation + 90;
+            Backbone.trigger("ROTATION_DEGREES", this.rotation);
         },
 
         //removes a tile from the map
@@ -160,36 +164,39 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         mouseup: function(e) {
             this.mdown = false;
             clearInterval(this.trigger);
-
-            //save to localStorage
-            this.map.save();
         },
 
         //Takes care of mousedown commands and do the appropriate thing depending on mousebutton
         mousedown: function(e) {
-            if(e.button == 0) { //Draw
+            if(e.button === 0) { //Draw
                 var that = this;
                 this.mdown = true;
 
-                if(this.currentTool == 1) {
+                if(this.currentTool === 1) {
                     this.trigger = setInterval(function() {that.setTile();}, 10);
                 }
-                else if (this.currentTool == 0) {
+                else if (this.currentTool === 0) {
                     this.trigger = setInterval(function() {that.removeTile();}, 10);
                 }
             }
-            else if(e.button == 1) { //Rotate
+            else if(e.button === 1) { //Rotate
                 e.preventDefault();
                 this.rotateTile();
             }
-            else if(e.button == 2) { //Copy tile from map
+            else if(e.button === 2) { //Copy tile from map
                 var tile = this.map.tiles[this.my][this.mx];
 
                 if (typeof(tile) != 'undefined') {
                     var mapPos = $(tile.getElement()).css('background-position').split(' ');
-                    Backbone.trigger("currentTile", [parseInt(mapPos[0]), parseInt(mapPos[1])]);
+                    Backbone.trigger("CURRENT_TILE", [parseInt(mapPos[0]), parseInt(mapPos[1])]);
+                    Backbone.trigger("TOOL_CHANGE", 1);
                 }
             }
+        },
+
+        mouseout: function(e) {
+            console.log("mouseout");
+            this.mouseup();
         },
 
         //Moves the selector over the #Map via CSS
@@ -220,10 +227,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             this.$el.html(this.template(this));
 
             if (this.temptiles.length != 0) {
-                var that = this;
-                this.temptiles.forEach(function(tile) {
-                    that.drawTile(tile);
-                });
+                _.each(this.temptiles, function(tile) {
+                    this.drawTile(tile);
+                }, this);
 
                 this.temptiles = [];
             }
@@ -233,19 +239,19 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         },
 
         update: function(opts) {
+            this.currentTile = [0,0];
             this.map = opts.map;
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
 
-            var that = this;
-            this.map.tiles.forEach(function(cols) {
-                cols.forEach(function(tile) {
-                    if(typeof(tile) !== "undefined") {
-                        tile.setElement(that.createDOMElement(tile));
-                        that.temptiles.push(tile);
+            _.each(this.map.tiles, function(cols) {
+                _.each(cols, function(tile) {
+                    if(typeof(tile) !== 'undefined') {
+                        tile.setElement(this.createDOMElement(tile));
+                        this.temptiles.push(tile);
                     }
-                })
-            });
+                }, this);
+            }, this);
         }
     });
 

@@ -3,8 +3,8 @@
  */
 //init the application
 
-define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
-    function($, Backbone, BaseView, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
+define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmodel', 'jscrollpane'],
+    function($, Backbone, ToolbarView, MapView, NavigationView, Map, jScrollPane) {
 
     var Editor = Backbone.View.extend({
 
@@ -20,30 +20,36 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
         mapbg: null,
 
         initialize: function(opts) {
-            this.listenTo(Backbone, "newMapEvent", this.update);
-            this.listenTo(Backbone, "openMapEvent", this.update);
-            this.listenTo(Backbone, "validatePicture", this.imageLoader);
+            this.listenTo(Backbone, "MAP_EVENT", this.update);
+            this.listenTo(Backbone, "VALIDATE_PICTURE", this.imageLoader);
 
-            this.createMap();
+            this.map = new Map();
             this.navigationview = new NavigationView();
-            this.toolbarview = new ToolbarView({map: this.map});
-            this.mapview = new MapView({map: this.map});
+            this.toolbarview = new ToolbarView();
+            this.mapview = new MapView();
 
             this.childviews.push(this.toolbarview);
             this.childviews.push(this.mapview);
 
-            this.update({
-                url: this.url,
-                tilesize: this.tilesize,
-                mapwidth: this.mapwidth,
-                mapheight: this.mapheight
-            });
+            this.update(this.readLocalStorage());
+        },
+
+        readLocalStorage: function() {
+            var credentials = this.createContentCredentials();
+            var data = localStorage.getItem("TJLS_MAP");
+            if (data) {
+                try {
+                    var parsed = $.parseJSON(data);
+                    var credentials = this.createContentCredentials(parsed);
+                } catch (e) {}
+            }
+
+            return credentials;
         },
 
         imageLoader: function(url, callback) {
             var img = new Image();
             img.src = url;
-            var that = this;
 
             $(img).load(function() {
                 callback(img);
@@ -57,31 +63,21 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
         calculateMapBg: function() {
             var backgrounds = ['16x16.png', '32x32.png', '48x48.png', '64x64.png'];
 
-            var that = this;
-            backgrounds.forEach(function(bg) {
-               if (parseInt(bg) === that.tilesize) {
-                   that.mapbg = bg;
+            _.each(backgrounds, function(bg) {
+               if (parseInt(bg) === this.tilesize) {
+                   this.mapbg = bg;
                }
-            });
+            }, this);
         },
 
-        createMap: function() {
-            this.map = new Map({
-                mapwidth: this.mapwidth,
-                mapheight: this.mapheight,
-                tilesize: this.tilesize,
-                url: this.url
-            });
-        },
-
-        render: function() {
-            this.$el.empty();
-            var that = this;
-
-            this.$el.append(this.navigationview.render().el);
-            this.childviews.forEach(function(view) {
-                that.$el.append(view.render().el);
-            });
+        createContentCredentials: function(optional) {
+            return {
+                url: typeof(optional) === 'undefined' ? this.url : optional.url,
+                tilesize:  typeof(optional) === 'undefined' ? this.tilesize : optional.tilesize,
+                mapwidth: typeof(optional) === 'undefined' ? this.mapwidth : optional.mapwidth,
+                mapheight: typeof(optional) === 'undefined' ? this.mapheight : optional.mapheight,
+                tiles: typeof(optional) === 'undefined' ? null : optional.tiles
+            }
         },
 
         update: function(opts) {
@@ -91,26 +87,35 @@ define(['jquery', 'backbone', 'baseview', 'toolbarview', 'mapview', 'navigationv
             this.mapheight = opts.mapheight;
             opts.map = this.map;
 
-            var that = this;
-            this.imageLoader(this.url, function(img) {
-                that.map.update(opts);
-                that.calculateMapBg();
+            this.imageLoader(this.url, _.bind(this.updateCredentials, this, opts));
+        },
 
-                //update subviews
-                that.childviews.forEach(function(view) {
-                    view.update(opts);
-                });
+        updateCredentials: function(opts, img) {
+            this.map.update(opts);
+            this.calculateMapBg();
 
-                that.render();
-
-                that.$('#tileset').css({width: img.width, height: img.height});
-                that.$('#currenttile').css({width: that.tilesize, height: that.tilesize});
-                that.$('.selector').css({width: that.tilesize-2, height: that.tilesize-2});
-                that.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+that.mapbg+')'});
-                that.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
-                that.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
+            //update subviews
+            _.each(this.childviews, function(view) {
+                view.update(opts);
             });
 
+            this.render();
+
+            this.$('#tileset').css({width: img.width, height: img.height});
+            this.$('#currenttile').css({width: this.tilesize, height: this.tilesize});
+            this.$('.selector').css({width: this.tilesize-2, height: this.tilesize-2});
+            this.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+this.mapbg+')'});
+            this.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
+            this.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
+        },
+
+        render: function() {
+            this.$el.empty();
+            this.$el.append(this.navigationview.render().el);
+
+            _.each(this.childviews, function(view) {
+                this.$el.append(view.render().el);
+            }, this);
         }
     });
 

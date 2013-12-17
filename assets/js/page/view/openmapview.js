@@ -19,28 +19,29 @@ define(['backbone', 'handlebars', 'text!../templates/openMapTemplate.html'],
                 e.preventDefault();
                 var file = this.$("#fileinput")[0].files[0];
                 var reader = new FileReader();
-                var that = this;
 
                 if (file) {
-                    $(reader).load(function(e) {
-                        try {
-                            var data = $.parseJSON(e.target.result);
-
-                            Backbone.trigger("openMapEvent", {
-                                url: data.url,
-                                tilesize: data.tilesize,
-                                mapwidth: data.mapwidth,
-                                mapheight: data.mapheight,
-                                tiles: data.tiles
-                            });
-                        } catch (e) {
-                            that.outputError("File can't be read as a correct Map-json object");
-                        }
-                    });
-
+                    $(reader).load(this.parseReadMap, _.bind(this.parseReadMap, this));
                     reader.readAsText(file);
                 } else {
                     this.outputError("no file chosen");
+                }
+            },
+
+            parseReadMap: function(reader) {
+                try {
+                    var data = $.parseJSON(reader.target.result);
+
+                    console.log(data);
+                    Backbone.trigger("MAP_EVENT", {
+                        url: data.url,
+                        tilesize: data.tilesize,
+                        mapwidth: data.mapwidth,
+                        mapheight: data.mapheight,
+                        tiles: data.tiles
+                    });
+                } catch (e) {
+                    this.outputError("File can't be read as a correct Map-json object");
                 }
             },
 

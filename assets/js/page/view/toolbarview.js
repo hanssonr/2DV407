@@ -1,8 +1,8 @@
 /**
  * Created by rkh on 2013-11-25.
  */
-define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/toolbarTemplate.html'],
-    function(Backbone, Handlebars, BaseView, TilesetView, toolbarTemplate) {
+define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTemplate.html'],
+    function(Backbone, Handlebars, TilesetView, toolbarTemplate) {
 
     var ToolbarView = Backbone.View.extend({
 
@@ -11,42 +11,59 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         template: Handlebars.compile( toolbarTemplate ),
 
         events: {
+            'mousedown': function() {return false;},
             "click #eraser": "erase",
             "click #draw": "draw",
             "click #rotate": "rotate"
         },
 
-        rotate: function() {
-            Backbone.trigger("rotateTile");
-        },
-
-        erase: function() {
-            Backbone.trigger("toolChange", 0);
-        },
-
-        draw: function() {
-            Backbone.trigger("toolChange", 1);
-        },
-
         //get url and tilesize from the editor
-        initialize: function(opts) {
-            this.listenTo(Backbone, "currentTile", this.showActiveTile);
-            this.url = opts.map.url;
-            this.tileset = new TilesetView(opts);
+        initialize: function() {
+            this.listenTo(Backbone, "CURRENT_TILE", this.showActiveTile);
+            this.listenTo(Backbone, "ROTATION_DEGREES", this.rotateActiveTile);
+            this.listenTo(Backbone, "TOOL_CHANGE", this.changeTool);
+
+            this.tileset = new TilesetView();
             this.childviews.push(this.tileset);
         },
 
         showActiveTile: function(pos) {
             this.$('#currenttile').css({
                 backgroundImage: 'url('+this.url+')',
-                backgroundPosition: pos[0] + 'px ' + pos[1] + 'px'
+                backgroundPosition: pos[0] + 'px ' + pos[1] + 'px',
+                transform: 'rotate('+ 0 +'deg)'
             });
+        },
+
+        rotateActiveTile: function(rotation) {
+            this.$('#currenttile').css({
+                transform:'rotate('+ rotation +'deg)'
+            });
+        },
+
+        changeTool: function(toolID) {
+            if(toolID === 0) {
+                this.$('#eraser').removeClass("btn-inverse").addClass("btn-warning");
+            } else if (toolID === 1) {
+                this.$('#eraser').removeClass("btn-warning").addClass("btn-inverse");
+            }
+        },
+
+        rotate: function() {
+            Backbone.trigger("ROTATE_TILE");
+        },
+
+        erase: function() {
+            Backbone.trigger("TOOL_CHANGE", 0);
         },
 
         render: function() {
             this.$el.empty();
             this.$el.append(this.template(this));
             this.delegateEvents();
+
+            //activate first tile in the sheet
+            this.showActiveTile([0,0]);
 
             //append sub-view
             this.$el.append(this.tileset.render().el);
@@ -56,7 +73,7 @@ define(['backbone', 'handlebars', 'baseview', 'tilesetview', 'text!../templates/
         update: function(opts) {
             this.url = opts.url;
 
-            this.childviews.forEach(function(view) {
+            _.each(this.childviews, function(view) {
                 view.update(opts);
             });
         }
