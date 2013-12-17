@@ -5,13 +5,14 @@ define(['backbone', 'tilemodel'],
     function(Backbone, Tile) {
 
         var Map = Backbone.Model.extend({
+            localStorage: new Backbone.LocalStorage('Map'),
 
             initialize: function(opts) {
+                this.tiles = [];
                 this.update(opts);
             },
 
             createTileArray: function() {
-                this.tiles = [];
                 for (var y=0; y < this.mapheight; y++) {
                     this.tiles[y] = [];
                     for (var x=0; x < this.mapwidth; x++) {

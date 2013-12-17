@@ -160,6 +160,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         mouseup: function(e) {
             this.mdown = false;
             clearInterval(this.trigger);
+
+            //save to localStorage
+            this.map.save();
         },
 
         //Takes care of mousedown commands and do the appropriate thing depending on mousebutton
