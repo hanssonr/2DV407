@@ -100,7 +100,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                 });
 
                 this.map.tiles[this.my][this.mx] = tile;
-                this.drawTile(tile);
+                this.drawTile(tile.getElement());
             } else {
                 tile.setBackgroundPosition([this.currentTile[0], this.currentTile[1]]);
                 tile.setRotation(this.rotation);
@@ -126,7 +126,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                 rotation = input.getRotation();
             }
 
-            var div = $("<div></div>");
+            var div = document.createElement('div');
             $(div).css({
                 position: 'absolute',
                 top: tileY * this.map.tilesize,
@@ -157,8 +157,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             this.map.tiles[this.my][this.mx] = undefined;
         },
 
-        drawTile: function(tile) {
-            this.$("#map div:last").before(tile.getElement());
+        drawTile: function(element) {
+            this.$("#map div:last").before(element);
         },
 
         //Clears the interval and reset mdown variable
@@ -221,24 +221,22 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             }
         },
 
-        /**
-         * TODO: använd effektivare algoritm (http://www.codeproject.com/Articles/6017/QuickFill-An-efficient-flood-fill-algorithm)
-         *       ändra så allt är tiles från början istället för undefined?
-         */
         fill: function(x, y) {
-            var count = 0;
-            var match = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgString();
+            var match = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgPosition().toString();
+
+            if (this.checkMatch(this.currentTile.toString(), match)) { return; }
+
             var fillqueue = [];
-            var x, y, current;
+            var fragment = document.createDocumentFragment();
+            var x, y, current, target;
 
             fillqueue.push([x, y]);
             while(fillqueue.length > 0) {
-                count++;
                 current = fillqueue.pop();
                 x = current[0];
                 y = current[1];
 
-                var target = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgString();
+                target = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgPosition().toString();
 
                 if (this.checkMatch(target, match)) {
                     if (target === undefined) {
@@ -249,11 +247,14 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                         });
                         target.setElement(this.createDOMElement(target));
                         this.map.tiles[y][x] = target;
-                        this.drawTile(target);
+                        fragment.appendChild(target.getElement());
                     } else {
-                        var tile = this.map.tiles[y][x];
-                        tile.setBackgroundPosition(this.currentTile);
-                        $(tile.getElement()).css({backgroundPosition: tile.getBgX() + 'px ' + tile.getBgY() + 'px'});
+                        target = this.map.tiles[y][x];
+                        target.setBackgroundPosition(this.currentTile);
+                        $(target.getElement()).css({
+                            backgroundPosition: target.getBgX() + 'px ' + target.getBgY() + 'px',
+                            transform:'rotate('+ this.rotation +'deg)'
+                        });
                     }
 
                     if (x-1 >= 0) { fillqueue.push([x-1, y]); }
@@ -263,10 +264,16 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                 }
             }
 
-            console.log(count);
+            this.drawTile(fragment);
             return;
         },
 
+        /**
+         * Helpfunction for the fill-function
+         * @param target undefined || String
+         * @param match undefined || String
+         * @returns {boolean}
+         */
         checkMatch: function(target, match) {
             if (target === undefined && match === undefined) { return true; }
             if (target === undefined && match !== undefined) { return false; }
@@ -279,7 +286,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
 
             if (this.temptiles.length != 0) {
                 _.each(this.temptiles, function(tile) {
-                    this.drawTile(tile);
+                    this.drawTile(tile.getElement());
                 }, this);
 
                 this.temptiles = [];

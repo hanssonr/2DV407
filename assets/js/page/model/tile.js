@@ -29,7 +29,7 @@ define(['backbone'], function(Backbone) {
             return this.get("position")[0];
         },
 
-        getBackgroundPosition: function() {
+        getBgPosition: function() {
             return this.get("bgPosition");
         },
 
