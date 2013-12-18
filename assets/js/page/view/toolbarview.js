@@ -14,7 +14,8 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
             'mousedown': function() {return false;},
             "click #eraser": "erase",
             "click #draw": "draw",
-            "click #rotate": "rotate"
+            "click #rotate": "rotate",
+            "click #fill": "fill"
         },
 
         //get url and tilesize from the editor
@@ -44,7 +45,7 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
         changeTool: function(toolID) {
             if(toolID === 0) {
                 this.$('#eraser').removeClass("btn-inverse").addClass("btn-warning");
-            } else if (toolID === 1) {
+            } else {
                 this.$('#eraser').removeClass("btn-warning").addClass("btn-inverse");
             }
         },
@@ -55,6 +56,10 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
 
         erase: function() {
             Backbone.trigger("TOOL_CHANGE", 0);
+        },
+
+        fill: function() {
+            Backbone.trigger("TOOL_CHANGE", 3);
         },
 
         render: function() {

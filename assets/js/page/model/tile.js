@@ -17,12 +17,20 @@ define(['backbone'], function(Backbone) {
             this.set({bgPosition: newpos});
         },
 
+        getBgString: function() {
+            return this.get('bgPosition').toString();
+        },
+
         setRotation: function(deg) {
             this.set({rotation: deg});
         },
 
         getTileX: function() {
             return this.get("position")[0];
+        },
+
+        getBackgroundPosition: function() {
+            return this.get("bgPosition");
         },
 
         getTileY: function() {

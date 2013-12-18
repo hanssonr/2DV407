@@ -77,6 +77,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         /*
             0 == erase
             1 == draw
+            3 == fill
          */
         setCurrentTool: function(toolID) {
             this.currentTool = toolID;
@@ -177,6 +178,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                 }
                 else if (this.currentTool === 0) {
                     this.trigger = setInterval(function() {that.removeTile();}, 10);
+                } else if (this.currentTool === 3) {
+                    this.fill(this.mx, this.my);
                 }
             }
             else if(e.button === 1) { //Rotate
@@ -192,11 +195,6 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                     Backbone.trigger("TOOL_CHANGE", 1);
                 }
             }
-        },
-
-        mouseout: function(e) {
-            console.log("mouseout");
-            this.mouseup();
         },
 
         //Moves the selector over the #Map via CSS
@@ -221,6 +219,59 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
                     transform:'rotate('+ this.rotation +'deg)'
                 });
             }
+        },
+
+        /**
+         * TODO: använd effektivare algoritm (http://www.codeproject.com/Articles/6017/QuickFill-An-efficient-flood-fill-algorithm)
+         *       ändra så allt är tiles från början istället för undefined?
+         */
+        fill: function(x, y) {
+            var count = 0;
+            var match = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgString();
+            var fillqueue = [];
+            var x, y, current;
+
+            fillqueue.push([x, y]);
+            while(fillqueue.length > 0) {
+                count++;
+                current = fillqueue.pop();
+                x = current[0];
+                y = current[1];
+
+                var target = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgString();
+
+                if (this.checkMatch(target, match)) {
+                    if (target === undefined) {
+                        target = new Tile({
+                            position: [x, y],
+                            bgPosition: [this.currentTile[0], this.currentTile[1]],
+                            rotation: this.rotation
+                        });
+                        target.setElement(this.createDOMElement(target));
+                        this.map.tiles[y][x] = target;
+                        this.drawTile(target);
+                    } else {
+                        var tile = this.map.tiles[y][x];
+                        tile.setBackgroundPosition(this.currentTile);
+                        $(tile.getElement()).css({backgroundPosition: tile.getBgX() + 'px ' + tile.getBgY() + 'px'});
+                    }
+
+                    if (x-1 >= 0) { fillqueue.push([x-1, y]); }
+                    if (x+1 <= this.map.mapwidth-1) { fillqueue.push([x+1, y]); }
+                    if (y-1 >= 0) { fillqueue.push([x, y-1]); }
+                    if (y+1 <= this.map.mapheight-1) { fillqueue.push([x, y+1]); }
+                }
+            }
+
+            console.log(count);
+            return;
+        },
+
+        checkMatch: function(target, match) {
+            if (target === undefined && match === undefined) { return true; }
+            if (target === undefined && match !== undefined) { return false; }
+            if (target !== undefined && match === undefined) { return false; }
+            return target === match;
         },
 
         render: function() {
