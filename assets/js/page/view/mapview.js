@@ -20,7 +20,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         rotation: 0,
         currentTile: [0,0],
         currentTool: 1,
-        temptiles: [],
+        tempfragment: null,
 
         events: {
             'mousedown': function() {return false;},
@@ -221,6 +221,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             }
         },
 
+        //Flood fill-algorithm
         fill: function(x, y) {
             var match = this.map.tiles[y][x] === undefined ? undefined : this.map.tiles[y][x].getBgPosition().toString();
 
@@ -284,12 +285,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         render: function() {
             this.$el.html(this.template(this));
 
-            if (this.temptiles.length != 0) {
-                _.each(this.temptiles, function(tile) {
-                    this.drawTile(tile.getElement());
-                }, this);
-
-                this.temptiles = [];
+            if (this.tempfragment !== null) {
+                this.drawTile(this.tempfragment);
+                this.tempfragment = null;
             }
 
             this.delegateEvents();
@@ -302,11 +300,12 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
 
+            this.tempfragment = document.createDocumentFragment();
             _.each(this.map.tiles, function(cols) {
                 _.each(cols, function(tile) {
                     if(typeof(tile) !== 'undefined') {
                         tile.setElement(this.createDOMElement(tile));
-                        this.temptiles.push(tile);
+                        this.tempfragment.appendChild(tile.getElement());
                     }
                 }, this);
             }, this);
