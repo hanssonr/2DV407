@@ -2,8 +2,8 @@
  * Created by rkh on 2013-11-25.
  */
 
-define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.html'],
-    function(Backbone, Handlebars, Tile, mapTemplate) {
+define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/mapTemplate.html'],
+    function(Backbone, Handlebars, Tile, Map, mapTemplate) {
 
     var MapView = Backbone.View.extend({
         id: 'map-wrapper',
@@ -21,6 +21,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         currentTile: [0,0],
         currentTool: 1,
         tempfragment: null,
+        map: null,
 
         events: {
             'mousedown': function() {return false;},
@@ -32,6 +33,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         },
 
         initialize: function() {
+            this.map = new Map(); 
+
             this.listenTo(Backbone, "EXPORT_MAP", this.exportMap);
             this.listenTo(Backbone, "SAVE_MAP", this.saveMap);
             this.listenTo(Backbone, "CURRENT_TILE", this.currentTileChange);
@@ -295,8 +298,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'text!../templates/mapTemplate.ht
         },
 
         update: function(opts) {
+            this.map.update(opts);
             this.currentTile = [0,0];
-            this.map = opts.map;
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();
 
