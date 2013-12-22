@@ -16,14 +16,12 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
         tilesize: 64,
         mapwidth: 8,
         mapheight: 8,
-        map: null,
         mapbg: null,
 
         initialize: function(opts) {
             this.listenTo(Backbone, "MAP_EVENT", this.update);
             this.listenTo(Backbone, "VALIDATE_PICTURE", this.imageLoader);
 
-            this.map = new Map();
             this.navigationview = new NavigationView();
             this.toolbarview = new ToolbarView();
             this.mapview = new MapView();
@@ -85,13 +83,11 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'navigationview', 'mapmo
             this.tilesize = opts.tilesize;
             this.mapwidth = opts.mapwidth;
             this.mapheight = opts.mapheight;
-            opts.map = this.map;
 
             this.imageLoader(this.url, _.bind(this.updateCredentials, this, opts));
         },
 
         updateCredentials: function(opts, img) {
-            this.map.update(opts);
             this.calculateMapBg();
 
             //update subviews
