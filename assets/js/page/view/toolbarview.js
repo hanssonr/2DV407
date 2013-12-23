@@ -75,11 +75,11 @@ define(['backbone', 'handlebars', 'tilesetview', 'text!../templates/toolbarTempl
             return this;
         },
 
-        update: function(opts) {
-            this.url = opts.url;
+        update: function(map) {
+            this.url = map.url();
 
             _.each(this.childviews, function(view) {
-                view.update(opts);
+                view.update(map);
             });
         }
     });

@@ -43,9 +43,9 @@ define(['backbone', 'handlebars', 'text!../templates/tilesetTemplate.html'],
             $('#toolbar .selector').css('top', ty * this.tilesize).css('left', tx * this.tilesize);
         },
 
-        update: function(opts) {
-            this.url = opts.url;
-            this.tilesize = opts.tilesize;
+        update: function(map) {
+            this.url = map.url();
+            this.tilesize = map.tilesize();
         }
     });
 

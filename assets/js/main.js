@@ -10,7 +10,7 @@ require.config({
         jquery: 'lib/jquery/jquery-2.0.3',
         jquerymousewheel: 'lib/jquery/jquery.mousewheel',
         purebackbone: 'lib/backbone/purebackbone',
-        backbone_LS: 'lib/backbone/backbone.localStorage',
+        backbone_validation: 'lib/backbone/backbone-validation',
         backbone: 'lib/backbone/backbone',
         underscore: 'lib/underscore',
         bootstrap: 'lib/bootstrap',
@@ -34,7 +34,7 @@ require.config({
             deps: ["underscore", "jquery"],
             exports: "Backbone"
         },
-        backbone_LS: ["purebackbone", "underscore"],
+        backbone_validation: ["purebackbone", "underscore"],
         handlebars: {
             exports: 'Handlebars'
         },

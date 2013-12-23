@@ -33,8 +33,6 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
         },
 
         initialize: function() {
-            this.map = new Map(); 
-
             this.listenTo(Backbone, "EXPORT_MAP", this.exportMap);
             this.listenTo(Backbone, "SAVE_MAP", this.saveMap);
             this.listenTo(Backbone, "CURRENT_TILE", this.currentTileChange);
@@ -67,13 +65,13 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
         calculatePosition: function(e) {
             offsetx = $('#map').offset().left;
             offsety = $('#map').offset().top;
-            this.mx = Math.floor((e.pageX - offsetx) / this.map.tilesize);
-            this.my = Math.floor((e.pageY - offsety) / this.map.tilesize);
+            this.mx = Math.floor((e.pageX - offsetx) / this.map.tilesize());
+            this.my = Math.floor((e.pageY - offsety) / this.map.tilesize());
 
             //fix for getting pos < 0 || pos > mapwidth/mapheight
-            if (this.mx > this.map.mapwidth-1) { this.mx = this.map.mapwidth-1; }
+            if (this.mx > this.map.mapwidth()-1) { this.mx = this.map.mapwidth()-1; }
             else if (this.mx < 0) { this.mx = 0; }
-            if (this.my > this.map.mapheight-1) { this.my = this.map.mapheight-1; }
+            if (this.my > this.map.mapheight()-1) { this.my = this.map.mapheight()-1; }
             else if (this.my < 0) { this.my = 0; }
         },
 
@@ -132,11 +130,11 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
             var div = document.createElement('div');
             $(div).css({
                 position: 'absolute',
-                top: tileY * this.map.tilesize,
-                left: tileX * this.map.tilesize,
-                width: this.map.tilesize,
-                height: this.map.tilesize,
-                backgroundImage: 'url('+this.map.url+')',
+                top: tileY * this.map.tilesize(),
+                left: tileX * this.map.tilesize(),
+                width: this.map.tilesize(),
+                height: this.map.tilesize(),
+                backgroundImage: 'url('+this.map.url()+')',
                 backgroundPosition: bgX + 'px ' + bgY + 'px',
                 transform:'rotate('+ rotation +'deg)'
             });
@@ -204,8 +202,8 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
         hoverMap: function(e) {
             this.calculatePosition(e);
             this.$('.selector').css({
-                top: this.my * this.map.tilesize,
-                left: this.mx * this.map.tilesize
+                top: this.my * this.map.tilesize(),
+                left: this.mx * this.map.tilesize()
             });
 
             this.showOpaqueTile();
@@ -216,7 +214,7 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
                 this.$('.selector').css({backgroundImage: 'url('+ +')'});
             } else {
                 this.$('.selector').css({
-                    backgroundImage: 'url('+this.map.url+')',
+                    backgroundImage: 'url('+this.map.url()+')',
                     backgroundPosition: this.currentTile[0] + 'px ' + this.currentTile[1] + 'px',
                     opacity: 0.5,
                     transform:'rotate('+ this.rotation +'deg)'
@@ -262,9 +260,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
                     }
 
                     if (x-1 >= 0) { fillqueue.push([x-1, y]); }
-                    if (x+1 <= this.map.mapwidth-1) { fillqueue.push([x+1, y]); }
+                    if (x+1 <= this.map.mapwidth()-1) { fillqueue.push([x+1, y]); }
                     if (y-1 >= 0) { fillqueue.push([x, y-1]); }
-                    if (y+1 <= this.map.mapheight-1) { fillqueue.push([x, y+1]); }
+                    if (y+1 <= this.map.mapheight()-1) { fillqueue.push([x, y+1]); }
                 }
             }
 
@@ -297,8 +295,9 @@ define(['backbone', 'handlebars', 'tilemodel', 'mapmodel', 'text!../templates/ma
             return this;
         },
 
-        update: function(opts) {
-            this.map.update(opts);
+        update: function(map) {
+            this.map = map;
+
             this.currentTile = [0,0];
             this.mapwidth = this.map.getCalculatedWidth();
             this.mapheight = this.map.getCalculatedHeight();

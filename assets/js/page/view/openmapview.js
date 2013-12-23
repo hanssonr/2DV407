@@ -2,8 +2,8 @@
  * Created by rkh on 2013-12-16.
  */
 
-define(['backbone', 'handlebars', 'text!../templates/openMapTemplate.html'],
-    function(Backbone, Handlebars, openMapTemplate) {
+define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/openMapTemplate.html'],
+    function(Backbone, Handlebars, Map, openMapTemplate) {
 
         var OpenMapView = Backbone.View.extend({
 
@@ -16,6 +16,7 @@ define(['backbone', 'handlebars', 'text!../templates/openMapTemplate.html'],
             },
 
             open: function(e) {
+                this.$('#form-validator ul').html("");
                 e.preventDefault();
                 var file = this.$("#fileinput")[0].files[0];
                 var reader = new FileReader();
@@ -32,22 +33,35 @@ define(['backbone', 'handlebars', 'text!../templates/openMapTemplate.html'],
                 try {
                     var data = $.parseJSON(reader.target.result);
 
-                    console.log(data);
-                    Backbone.trigger("MAP_EVENT", {
-                        url: data.url,
-                        tilesize: data.tilesize,
-                        mapwidth: data.mapwidth,
-                        mapheight: data.mapheight,
-                        tiles: data.tiles
-                    });
+                    var map = new Map(data);
+                    map.addToTileArray(data.tiles);
+
+                    Backbone.trigger("VALIDATE_PICTURE", data.url, _.bind(this.validateMapObject, this, map));
                 } catch (e) {
                     this.outputError("File can't be read as a correct Map-json object");
                 }
             },
 
+            validateMapObject: function(map, img) {
+                if(img !== false) {
+                    Backbone.Validation.bind(this, {
+                        model: map,
+
+                        invalid: function(view, attr, error) {
+                            view.outputError(error);
+                        }
+                    });
+
+                    if (map.isValid(true)) {
+                        Backbone.trigger("MAP_EVENT", map, img);
+                    }
+                } else {
+                    this.outputError("The URL could not be read as a image");
+                }
+            },
+
             //Outputs error to the form
             outputError: function(error) {
-                this.$('#form-validator ul').html("");
                 this.$('#form-validator ul').append($('<li>'+error+'</li>'));
                 this.$('#form-validator').removeClass("hidden");
             },

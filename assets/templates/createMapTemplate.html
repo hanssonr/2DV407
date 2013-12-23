@@ -4,11 +4,16 @@
         <label>Tilesheet:</label>
         <input type="text" name="url" placeholder="URL" required>
         <label>Tilesize:</label>
-        <input type="number" name="tilesize" min="16" max="64" value="32" step="16">
+        <select name="tilesize">
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="48">48</option>
+            <option value="64">64</option>
+        </select>
         <label>Width:</label>
-        <input type="number" name="width" min="10" max="255" value="10">
+        <input type="number" name="width" min="1" max="250" value="10" required>
         <label>Height:</label>
-        <input type="number" name="height" min="10" max="255" value="10">
+        <input type="number" name="height" min="1" max="250" value="10" required>
         <button id="newmap-submit" class="btn btn-inverse">create</button>
         <button id="newmap-cancel" class="btn btn-warning">cancel</button>
     </form>
