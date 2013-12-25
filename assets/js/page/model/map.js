@@ -1,11 +1,16 @@
 /**
  * Created by rkh on 2013-11-26.
+ *
+ * Object representing a Map
  */
 define(['backbone', 'tilemodel'],
     function(Backbone, Tile) {
 
         var Map = Backbone.Model.extend({
 
+            /**
+             * Model validation
+             */
             validation: {
                 url: [{
                     required: true,
@@ -36,6 +41,9 @@ define(['backbone', 'tilemodel'],
                 this.createTileArray();
             },
 
+            /**
+             * Creates a matrix for the map
+             */
             createTileArray: function() {
                 for (var y=0; y < this.mapheight(); y++) {
                     this.tiles[y] = [];
@@ -45,14 +53,26 @@ define(['backbone', 'tilemodel'],
                 }
             },
 
+            /**
+             * Calculates mapwidth in pixels
+             * @returns {number}
+             */
             getCalculatedWidth: function() {
                 return this.mapwidth() * this.tilesize();
             },
 
+            /**
+             * Calculates mapheight in pixels
+             * @returns {number}
+             */
             getCalculatedHeight: function() {
                 return this.mapheight() * this.tilesize();
             },
 
+            /**
+             * Creates JSON-string of the map-object
+             * @returns {*}
+             */
             createJSONString: function() {
                 var output = {
                     "url": this.url(),
@@ -65,6 +85,10 @@ define(['backbone', 'tilemodel'],
                 return JSON.stringify(output);
             },
 
+            /**
+             * Creates readable string of the tiles-array inside the map-object
+             * @returns {Array}
+             */
             generateTiles: function() {
                 var temp = [];
                 for(var y = 0; y < this.mapheight(); y++) {
@@ -78,6 +102,10 @@ define(['backbone', 'tilemodel'],
                 return temp;
             },
 
+            /**
+             * Adds tiles to the tilearray
+             * @param array
+             */
             addToTileArray: function(array) {
                 for (var y=0; y < array.length; y++) {
                     for (var x=0; x < array[y].length; x++) {

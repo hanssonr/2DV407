@@ -14,7 +14,10 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/createMapTempla
                 'click #newmap-cancel' : 'cancelCreation'
             },
 
-            //Validates form input
+            /**
+             * Checks whether form is validated
+             * in that case validate the data
+             */
             validateForm: (function(e) {
                 this.$('#form-validator ul').html("");
 
@@ -29,6 +32,10 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/createMapTempla
                 }
             }),
 
+            /**
+             * Validates input from form
+             * @param data - array
+             */
             validateData: function(data) {
                 Backbone.trigger("VALIDATE_PICTURE", data[0], _.bind(function(img) {
                     if(img !== false) {
@@ -51,6 +58,11 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/createMapTempla
                 }, this));
             },
 
+            /**
+             * Helper function for creating a Map-object
+             * @param data - array
+             * @returns {mapmodel}
+             */
             createNewMap: function(data) {
                 var map = new Map({
                     url: data[0],
@@ -62,18 +74,28 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/createMapTempla
                 return map;
             },
 
-            //Outputs error to the form
+            /**
+             * Helper function for outputting errors to the user
+             * @param error
+             */
             outputError: function(error) {
                 this.$('#form-validator ul').append($('<li>'+error+'</li>'));
                 this.$('#form-validator').removeClass("hidden");
             },
 
-            //removes overlay
+            /**
+             * Removes the overlay
+             * @param e
+             */
             cancelCreation: function(e) {
                 e.preventDefault();
                 this.$el.remove();
             },
 
+            /**
+             * Renderds view
+             * @returns {CreateMapView}
+             */
             render: function() {
                 this.$el.html(this.template(this));
                 return this;

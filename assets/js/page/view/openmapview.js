@@ -15,6 +15,10 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/openMapTemplate
                 "click #openmap-cancel" : "cancel"
             },
 
+            /**
+             * Reads the chosen file
+             * @param e
+             */
             open: function(e) {
                 this.$('#form-validator ul').html("");
                 e.preventDefault();
@@ -29,6 +33,11 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/openMapTemplate
                 }
             },
 
+            /**
+             * Tries to parse the data
+             * Creates a map-object and sends it to validation
+             * @param reader
+             */
             parseReadMap: function(reader) {
                 try {
                     var data = $.parseJSON(reader.target.result);
@@ -42,6 +51,11 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/openMapTemplate
                 }
             },
 
+            /**
+             * Validates a map-object by backbone.validation
+             * @param map - Map (model)
+             * @param img - <img> element
+             */
             validateMapObject: function(map, img) {
                 if(img !== false) {
                     Backbone.Validation.bind(this, {
@@ -60,18 +74,28 @@ define(['backbone', 'handlebars', 'mapmodel', 'text!../templates/openMapTemplate
                 }
             },
 
-            //Outputs error to the form
+            /**
+             * Helper function for outputting errors to the user
+             * @param error
+             */
             outputError: function(error) {
                 this.$('#form-validator ul').append($('<li>'+error+'</li>'));
                 this.$('#form-validator').removeClass("hidden");
             },
 
-            //removes overlay
+            /**
+             * Removes the overlay element
+             * @param e
+             */
             cancel: function(e) {
                 e.preventDefault();
                 this.$el.remove();
             },
 
+            /**
+             * Renders the view
+             * @returns {OpenMapView}
+             */
             render: function() {
                 this.$el.html(this.template(this));
                 return this;

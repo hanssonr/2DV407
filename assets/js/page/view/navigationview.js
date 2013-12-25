@@ -7,10 +7,8 @@ define(['backbone', 'handlebars', 'createmapview', 'openmapview', 'text!../templ
         var NavigationView = Backbone.View.extend({
 
             id: 'navigation',
+            className: 'unselectable',
             template: Handlebars.compile( navigationTemplate ),
-
-            initialize: function() {
-            },
 
             events: {
                 'mousedown': function() {return false;},
@@ -20,24 +18,40 @@ define(['backbone', 'handlebars', 'createmapview', 'openmapview', 'text!../templ
                 'click #nav-export': 'exportMap'
             },
 
+            /**
+             * Creates a view for creating a new map
+             */
             newMap: function() {
                 var create = new CreateMapView();
                 this.$el.parent().append(create.render().el);
             },
 
+            /**
+             * Creates a view for opening a saved map
+             */
             openMap: function() {
                 var open = new OpenMapView();
                 this.$el.parent().append(open.render().el);
             },
 
+            /**
+             * Sends out the SAVE_MAP event
+             */
             saveMap: function() {
                 Backbone.trigger("SAVE_MAP");
             },
 
+            /**
+             * Sends out the EXPORT_MAP event
+             */
             exportMap: function() {
                 Backbone.trigger("EXPORT_MAP");
             },
 
+            /**
+             * Renders the view
+             * @returns {NavigationView}
+             */
             render: function() {
                 this.$el.empty();
                 this.$el.html(this.template(this));

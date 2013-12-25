@@ -15,7 +15,6 @@ require.config({
         underscore: 'lib/underscore',
         bootstrap: 'lib/bootstrap',
         handlebars: 'lib/handlebars-v1.1.2',
-        baseview: 'page/view/baseview',
         toolbarview: 'page/view/toolbarview',
         openmapview: 'page/view/openmapview',
         mapview: 'page/view/mapview',
@@ -24,7 +23,8 @@ require.config({
         tilesetview: 'page/view/tilesetview',
         jscrollpane: 'lib/jquery/jquery.jscrollpane',
         navigationview: 'page/view/navigationview',
-        createmapview: 'page/view/createmapview'
+        createmapview: 'page/view/createmapview',
+        tool: 'page/model/tool'
     },
 
     //config non-amd scripts
@@ -42,12 +42,12 @@ require.config({
             deps: ["jquery"]
         },
         jscrollpane: {
-            deps: ["jquery"]
+            deps: ["jquery", "jquerymousewheel"]
         }
     }
 });
 
-require(['editor', 'jquery'], function(Editor, $) {
+define(['editor'], function(Editor) {
     var editorView = new Editor();
     $("body").append(editorView.el);
 });

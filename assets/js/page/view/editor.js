@@ -12,10 +12,10 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
         id: "container",
 
         //defaults
-        url: "http://brain.wireos.com/wp-content/uploads/gta2tiles.jpg",
-        tilesize: 64,
-        mapwidth: 8,
-        mapheight: 8,
+        url: "http://fc06.deviantart.net/fs71/f/2010/091/4/2/RPG_Maker_VX_RTP_Tileset_by_telles0808.png",
+        tilesize: 32,
+        mapwidth: 25,
+        mapheight: 25,
         mapbg: null,
 
         /**
@@ -43,20 +43,20 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
         },
 
         /**
-         * Helper function that reads localstorage and creates credentials from thata data
+         * Helper function that reads localstorage and creates data from its content
          * @returns {{url: *, tilesize: *, mapwidth: *, mapheight: *, tiles: null}}
          */
         readLocalStorage: function() {
-            var credentials = this.createContentCredentials();
+            var content = this.createContentData();
             var data = localStorage.getItem("TJLS_MAP");
             if (data) {
                 try {
                     var parsed = $.parseJSON(data);
-                    var credentials = this.createContentCredentials(parsed);
+                    content = this.createContentData(parsed);
                 } catch (e) {}
             }
 
-            return credentials;
+            return content;
         },
 
         /**
@@ -64,7 +64,7 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
          * @param optional - a anonymous object as input
          * @returns {{url: *, tilesize: *, mapwidth: *, mapheight: *, tiles: null}}
          */
-        createContentCredentials: function(optional) {
+        createContentData: function(optional) {
             return {
                 url: typeof(optional) === 'undefined' ? this.url : optional.url,
                 tilesize:  typeof(optional) === 'undefined' ? this.tilesize : optional.tilesize,

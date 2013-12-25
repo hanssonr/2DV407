@@ -1,8 +1,8 @@
 /**
  * Created by rkh on 2013-11-19.
+ *
+ * Object representing a Tile
  */
-
-//Model for a tile
 define(['backbone'], function(Backbone) {
     var Tile = Backbone.Model.extend({
 
