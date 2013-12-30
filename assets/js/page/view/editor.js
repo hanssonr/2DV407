@@ -20,7 +20,6 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
 
         /**
          * Initializes the application
-         * @param opts
          */
         initialize: function() {
             this.listenTo(Backbone, "MAP_EVENT", this.update);
@@ -92,27 +91,30 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
         },
 
         /**
-         * Calculates the right background for the #Map div
+         * Creates background for the #Map div
          * @param map - Map (model)
          */
-        calculateMapBg: function(map) {
-            var backgrounds = ['16x16.png', '32x32.png', '48x48.png', '64x64.png'];
+        createMapBg: function(map) {
+            var canvas = document.createElement("canvas");
 
-            _.each(backgrounds, function(bg) {
-               if (parseInt(bg) === map.tilesize()) {
-                   this.mapbg = bg;
-               }
-            }, this);
+            var w = canvas.width = map.tilesize();
+            var h = canvas.height = map.tilesize();
+
+            var ctx = canvas.getContext("2d");
+            ctx.fillRect(0, h-1, w, 1);
+            ctx.fillRect(w-1, 0, 1, h);
+
+            this.mapbg = canvas.toDataURL();
         },
 
         /**
          * Called after a update to the map has happened.
-         * Calls all the childviews and updates their credientials
+         * Calls all the childviews and updates their data
          * @param map - Map (model)
          * @param img - Image
          */
         update: function(map, img) {
-            this.calculateMapBg(map);
+            this.createMapBg(map);
 
             //update subviews
             _.each(this.childviews, function(view) {
@@ -124,7 +126,7 @@ define(['jquery', 'backbone', 'toolbarview', 'mapview', 'mapmodel', 'navigationv
             this.$('#tileset').css({width: img.width, height: img.height});
             this.$('#currenttile').css({width: map.tilesize(), height: map.tilesize()});
             this.$('.selector').css({width: map.tilesize()-2, height: map.tilesize()-2});
-            this.$('#map').css({backgroundImage: 'url(assets/img/mapbg/'+this.mapbg+')'});
+            this.$('#map').css({backgroundImage: 'url('+this.mapbg+')'});
             this.$('#tileset-wrapper').jScrollPane({mouseWheelSpeed:20});
             this.$("#map-wrapper").jScrollPane({mouseWheelSpeed:20});
         },

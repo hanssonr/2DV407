@@ -19,8 +19,9 @@ define(['backbone', 'tilemodel'],
                 }],
                 tilesize: [{
                     required: true,
-                    oneOf: [16, 32, 48, 64],
-                    msg: 'Tilesize must be either of (16, 32, 48, 64)'
+                    range: [1, 250],
+                    pattern: 'number',
+                    msg: 'Tilesize must be in the range 1-100'
                 }],
                 mapwidth: [{
                     required: true,
